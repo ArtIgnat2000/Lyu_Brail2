@@ -1,0 +1,1959 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Код Брайля: Наука чтения кончиками пальцев</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      /* Base Daylight Palette (WCAG AAA contrast on light backgrounds) */
+      --bg-canvas: #F8FAFC;
+      --card-bg: #FFFFFF;
+      --card-border: #E2E8F0;
+      --text-main: #0F172A;
+      --text-secondary: #334155;
+      --text-muted: #64748B;
+      
+      /* Distinct Laboratory Theme Colors */
+      --primary: #1D4ED8;       /* Deep Royal Blue */
+      --primary-light: #EFF6FF;
+      --primary-hover: #1E40AF;
+      --accent: #0284C7;        /* Tech Cyan */
+      --success: #059669;       /* Deep Emerald */
+      --success-light: #ECFDF5;
+      --warning: #D97706;       /* Warm Amber */
+      --warning-light: #FFFBEB;
+      --danger: #DC2626;        /* Clear Coral Red */
+      --danger-light: #FEF2F2;
+      --dot-active: #0F172A;    /* Solid dark ink tactile dot */
+      --dot-inactive: #CBD5E1;
+      
+      /* Presentation Geometry */
+      --slide-ratio: 16 / 9;
+      --card-radius: 20px;
+      --shadow-sm: 0 2px 4px rgba(15, 23, 42, 0.04), 0 1px 2px rgba(15, 23, 42, 0.03);
+      --shadow-md: 0 10px 25px -5px rgba(15, 23, 42, 0.06), 0 8px 10px -6px rgba(15, 23, 42, 0.04);
+      --shadow-lg: 0 20px 30px -10px rgba(15, 23, 42, 0.08);
+      --font-scale: 1;
+    }
+
+    /* Screen mode variations */
+    body.mode-projector {
+      --bg-canvas: #FFFFFF;
+      --card-border: #CBD5E1;
+      --text-secondary: #1E293B;
+      --font-scale: 1.08;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background-color: var(--bg-canvas);
+      color: var(--text-main);
+      height: 100vh;
+      width: 100vw;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      user-select: none;
+    }
+
+    /* Subtle background grid pattern representing precision laboratory graph paper */
+    .bg-grid {
+      position: fixed;
+      inset: 0;
+      background-image: 
+        radial-gradient(circle at 1px 1px, rgba(148, 163, 184, 0.25) 1.2px, transparent 0);
+      background-size: 28px 28px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Header Bar */
+    header {
+      position: relative;
+      z-index: 10;
+      height: 58px;
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--card-border);
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(12px);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 800;
+      font-size: 1.05rem;
+      color: var(--text-main);
+      letter-spacing: -0.02em;
+    }
+
+    .brand-tag {
+      background: var(--primary-light);
+      color: var(--primary);
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      border: 1px solid rgba(29, 78, 216, 0.2);
+    }
+
+    .top-controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn-toggle-mode {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      border-radius: 8px;
+      border: 1px solid var(--card-border);
+      background: #FFFFFF;
+      color: var(--text-secondary);
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .btn-toggle-mode:hover {
+      background: var(--primary-light);
+      color: var(--primary);
+      border-color: var(--primary);
+    }
+    .btn-toggle-mode.active {
+      background: var(--primary);
+      color: #FFFFFF;
+      border-color: var(--primary);
+    }
+
+    /* Main Deck Stage */
+    main.stage {
+      flex: 1;
+      position: relative;
+      z-index: 5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px 32px 80px;
+      overflow: hidden;
+    }
+
+    .slide {
+      position: absolute;
+      inset: 20px 32px 80px;
+      max-width: 1220px;
+      margin: 0 auto;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--card-radius);
+      box-shadow: var(--shadow-lg);
+      padding: 40px 52px;
+      display: flex;
+      flex-direction: column;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(16px) scale(0.985);
+      transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1), 
+                  transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+      overflow-y: auto;
+    }
+
+    .slide.active {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateY(0) scale(1);
+    }
+
+    /* Slide Header Hierarchy */
+    .slide-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--primary);
+      margin-bottom: 8px;
+    }
+
+    .slide-badge::before {
+      content: "";
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--primary);
+    }
+
+    h1.slide-title {
+      font-size: calc(2.4rem * var(--font-scale));
+      font-weight: 800;
+      line-height: 1.18;
+      color: var(--text-main);
+      letter-spacing: -0.03em;
+      margin-bottom: 8px;
+    }
+
+    p.slide-lead {
+      font-size: calc(1.15rem * var(--font-scale));
+      color: var(--text-secondary);
+      line-height: 1.5;
+      max-width: 900px;
+      margin-bottom: 24px;
+    }
+
+    /* Content Layout Grids */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 28px;
+      align-items: center;
+      flex: 1;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      align-items: stretch;
+      flex: 1;
+    }
+
+    /* Cards & Containers */
+    .feature-card {
+      background: #FFFFFF;
+      border: 1.5px solid var(--card-border);
+      border-radius: 16px;
+      padding: 24px 26px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      position: relative;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .feature-card.highlight {
+      border-color: #93C5FD;
+      background: linear-gradient(180deg, #FFFFFF 0%, #F8FAFC 100%);
+    }
+
+    .feature-card .card-num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      border-radius: 10px;
+      background: var(--primary-light);
+      color: var(--primary);
+      font-weight: 800;
+      font-size: 0.95rem;
+    }
+
+    .feature-card h3 {
+      font-size: calc(1.2rem * var(--font-scale));
+      font-weight: 700;
+      color: var(--text-main);
+      line-height: 1.3;
+    }
+
+    .feature-card p {
+      font-size: calc(0.95rem * var(--font-scale));
+      color: var(--text-secondary);
+      line-height: 1.55;
+    }
+
+    /* Hero Slide 1 Elements */
+    .hero-layout {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 40px;
+      align-items: center;
+      flex: 1;
+    }
+
+    .hero-facts {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 20px;
+    }
+
+    .fact-item {
+      background: var(--primary-light);
+      border: 1px solid rgba(29, 78, 216, 0.15);
+      border-radius: 12px;
+      padding: 14px 16px;
+    }
+
+    .fact-item .label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--primary);
+      font-weight: 700;
+    }
+
+    .fact-item .value {
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: var(--text-main);
+      margin-top: 4px;
+    }
+
+    .hero-portrait-card {
+      position: relative;
+      background: #FFFFFF;
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      padding: 16px;
+      box-shadow: var(--shadow-md);
+      text-align: center;
+    }
+
+    .hero-portrait-img {
+      width: 100%;
+      height: 290px;
+      object-fit: cover;
+      object-position: center 20%;
+      border-radius: 14px;
+      display: block;
+      background: #E2E8F0;
+    }
+
+    .hero-portrait-caption {
+      margin-top: 12px;
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .hero-portrait-quote {
+      margin-top: 14px;
+      padding: 12px 16px;
+      background: #F1F5F9;
+      border-left: 4px solid var(--primary);
+      border-radius: 0 10px 10px 0;
+      font-style: italic;
+      color: var(--text-main);
+      font-weight: 600;
+      font-size: 0.95rem;
+      text-align: left;
+    }
+
+    /* Timeline on Slide 2 */
+    .timeline-container {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      margin-top: 8px;
+    }
+
+    .timeline-step {
+      display: grid;
+      grid-template-columns: 140px 1fr;
+      gap: 20px;
+      align-items: center;
+      background: #FFFFFF;
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 16px 20px;
+      box-shadow: var(--shadow-sm);
+      transition: all 0.2s ease;
+    }
+
+    .timeline-step:hover {
+      border-color: var(--primary);
+      transform: translateX(4px);
+    }
+
+    .step-time {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .step-year {
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: var(--primary);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .step-age {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    .step-body h4 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 2px;
+    }
+
+    .step-body p {
+      font-size: 0.92rem;
+      color: var(--text-secondary);
+      line-height: 1.45;
+    }
+
+    /* Slide 3: Anatomy of Braille Cell & Engineering */
+    .cell-anatomy-box {
+      background: #F8FAFC;
+      border: 1.5px solid var(--card-border);
+      border-radius: 18px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+    }
+
+    .braille-grid-display {
+      display: grid;
+      grid-template-columns: repeat(2, 60px);
+      grid-template-rows: repeat(3, 60px);
+      gap: 16px;
+      background: #FFFFFF;
+      padding: 24px;
+      border-radius: 16px;
+      box-shadow: var(--shadow-md);
+      border: 2px dashed #CBD5E1;
+      position: relative;
+    }
+
+    .anatomy-dot {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: #F1F5F9;
+      border: 2px solid #94A3B8;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 1.15rem;
+      color: var(--text-secondary);
+      font-family: 'JetBrains Mono', monospace;
+      position: relative;
+      transition: all 0.2s ease;
+    }
+
+    .anatomy-dot.highlight {
+      background: var(--primary);
+      color: #FFFFFF;
+      border-color: var(--primary-hover);
+      box-shadow: 0 4px 12px rgba(29, 78, 216, 0.3);
+    }
+
+    .formula-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 18px;
+      background: var(--warning-light);
+      border: 1px solid rgba(217, 119, 6, 0.3);
+      border-radius: 10px;
+      color: #92400E;
+      font-weight: 700;
+      font-size: 0.95rem;
+    }
+
+    /* Slide 4: Respectful Etiquette */
+    .etiquette-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin-top: 8px;
+    }
+
+    .etiq-card {
+      border-radius: 16px;
+      padding: 24px 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .etiq-card.myth {
+      background: var(--danger-light);
+      border: 1.5px solid rgba(220, 38, 38, 0.25);
+    }
+
+    .etiq-card.truth {
+      background: var(--success-light);
+      border: 1.5px solid rgba(5, 150, 105, 0.25);
+    }
+
+    .etiq-card h3 {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1.2rem;
+      font-weight: 800;
+    }
+
+    .etiq-card.myth h3 { color: var(--danger); }
+    .etiq-card.truth h3 { color: var(--success); }
+
+    .etiq-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .etiq-list li {
+      font-size: 0.98rem;
+      line-height: 1.45;
+      color: var(--text-main);
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .etiq-list li strong {
+      font-weight: 700;
+    }
+
+    .pill-icon {
+      flex-shrink: 0;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      font-weight: 800;
+      margin-top: 2px;
+    }
+    .myth .pill-icon { background: #FCA5A5; color: #7F1D1D; }
+    .truth .pill-icon { background: #6EE7B7; color: #064E3B; }
+
+    /* Slide 5: Interactive Builder */
+    .builder-container {
+      display: grid;
+      grid-template-columns: 1fr 1.15fr;
+      gap: 36px;
+      align-items: center;
+      flex: 1;
+    }
+
+    .target-preview-panel {
+      background: #F8FAFC;
+      border: 1.5px solid var(--card-border);
+      border-radius: 18px;
+      padding: 24px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .target-letter-badge {
+      font-size: 3rem;
+      font-weight: 900;
+      color: var(--primary);
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+
+    .target-braille-small {
+      display: grid;
+      grid-template-columns: repeat(2, 28px);
+      grid-template-rows: repeat(3, 28px);
+      gap: 8px;
+      background: #FFFFFF;
+      padding: 16px;
+      border-radius: 12px;
+      border: 1px solid var(--card-border);
+      margin: 12px 0;
+    }
+
+    .target-dot-sm {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #E2E8F0;
+    }
+
+    .target-dot-sm.on {
+      background: var(--text-main);
+      box-shadow: 0 2px 6px rgba(15, 23, 42, 0.25);
+    }
+
+    .interactive-board {
+      background: #FFFFFF;
+      border: 2px solid var(--primary);
+      border-radius: 20px;
+      padding: 28px;
+      box-shadow: var(--shadow-md);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .clickable-cell {
+      display: grid;
+      grid-template-columns: repeat(2, 68px);
+      grid-template-rows: repeat(3, 68px);
+      gap: 16px;
+    }
+
+    .interactive-dot-btn {
+      width: 68px;
+      height: 68px;
+      border-radius: 50%;
+      border: 3px solid #CBD5E1;
+      background: #F8FAFC;
+      cursor: pointer;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 800;
+      font-size: 1.3rem;
+      color: #94A3B8;
+      transition: all 0.15s ease-out;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .interactive-dot-btn:hover {
+      border-color: var(--primary);
+      background: var(--primary-light);
+      color: var(--primary);
+      transform: scale(1.05);
+    }
+
+    .interactive-dot-btn.active {
+      background: var(--text-main);
+      border-color: var(--text-main);
+      color: #FFFFFF;
+      box-shadow: 0 4px 14px rgba(15, 23, 42, 0.35);
+      transform: scale(0.96);
+    }
+
+    .btn-action {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 12px 28px;
+      border-radius: 12px;
+      background: var(--primary);
+      color: #FFFFFF;
+      border: none;
+      font-weight: 700;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 12px rgba(29, 78, 216, 0.25);
+    }
+
+    .btn-action:hover {
+      background: var(--primary-hover);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(29, 78, 216, 0.35);
+    }
+
+    /* Slide 6: Real-Time Translator */
+    .translator-wrapper {
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+      flex: 1;
+    }
+
+    .input-control-box {
+      display: flex;
+      gap: 14px;
+      align-items: center;
+    }
+
+    .input-control-box input {
+      flex: 1;
+      padding: 14px 22px;
+      border: 2px solid var(--card-border);
+      border-radius: 14px;
+      font-size: 1.35rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--text-main);
+      background: #FFFFFF;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .input-control-box input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(29, 78, 216, 0.12);
+    }
+
+    .quick-tags {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .quick-tag-btn {
+      padding: 6px 14px;
+      border-radius: 8px;
+      background: #F1F5F9;
+      border: 1px solid var(--card-border);
+      color: var(--text-secondary);
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .quick-tag-btn:hover {
+      background: var(--primary-light);
+      color: var(--primary);
+      border-color: var(--primary);
+    }
+
+    .tactile-tape {
+      background: #FFFFFF;
+      border: 1.5px solid var(--card-border);
+      border-radius: 18px;
+      padding: 30px;
+      min-height: 200px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      box-shadow: inset 0 2px 6px rgba(15, 23, 42, 0.03);
+    }
+
+    .cipher-cell {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      background: #F8FAFC;
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 12px 14px;
+    }
+
+    .cipher-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 16px);
+      grid-template-rows: repeat(3, 16px);
+      gap: 6px;
+    }
+
+    .cipher-dot {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #E2E8F0;
+    }
+
+    .cipher-dot.on {
+      background: var(--text-main);
+      box-shadow: 0 2px 4px rgba(15, 23, 42, 0.3);
+    }
+
+    .cipher-char {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--primary);
+    }
+
+    /* Slide 7: Quiz Arena */
+    .quiz-container {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      flex: 1;
+    }
+
+    .quiz-card {
+      background: #FFFFFF;
+      border: 1.5px solid var(--card-border);
+      border-radius: 16px;
+      padding: 24px 28px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .quiz-question-text {
+      font-size: calc(1.3rem * var(--font-scale));
+      font-weight: 800;
+      color: var(--text-main);
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .quiz-num-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      background: var(--primary);
+      color: #FFFFFF;
+      font-size: 0.95rem;
+    }
+
+    .quiz-options-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .quiz-btn {
+      padding: 16px 20px;
+      border-radius: 12px;
+      border: 2px solid var(--card-border);
+      background: #F8FAFC;
+      color: var(--text-main);
+      font-size: 1.05rem;
+      font-weight: 700;
+      text-align: left;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: all 0.2s ease;
+    }
+
+    .quiz-btn:hover:not(:disabled) {
+      border-color: var(--primary);
+      background: var(--primary-light);
+      color: var(--primary);
+      transform: translateY(-2px);
+    }
+
+    .quiz-btn.correct {
+      background: var(--success-light);
+      border-color: var(--success);
+      color: var(--success);
+      font-weight: 800;
+    }
+
+    .quiz-btn.wrong {
+      background: var(--danger-light);
+      border-color: var(--danger);
+      color: var(--danger);
+    }
+
+    .quiz-progress-bar {
+      height: 6px;
+      background: #E2E8F0;
+      border-radius: 999px;
+      overflow: hidden;
+      margin-top: 10px;
+    }
+
+    .quiz-progress-fill {
+      height: 100%;
+      background: var(--primary);
+      width: 16%;
+      transition: width 0.3s ease;
+    }
+
+    /* Optional Warm-up Modal (Slide 8 optional toggle) */
+    .warmup-box {
+      background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%);
+      border: 1.5px solid #BFDBFE;
+      border-radius: 18px;
+      padding: 24px 28px;
+      margin-top: 10px;
+    }
+
+    .warmup-steps {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+      margin-top: 14px;
+    }
+
+    .warmup-step-item {
+      background: #FFFFFF;
+      padding: 16px 20px;
+      border-radius: 12px;
+      border: 1px solid #BFDBFE;
+    }
+
+    /* Navigation Dock (Bottom) */
+    footer.dock {
+      position: fixed;
+      bottom: 14px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(14px);
+      border: 1px solid var(--card-border);
+      box-shadow: 0 12px 30px rgba(15, 23, 42, 0.12);
+      padding: 8px 18px;
+      border-radius: 999px;
+    }
+
+    .dock-btn {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      border: 1px solid var(--card-border);
+      background: #FFFFFF;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.15rem;
+      cursor: pointer;
+      font-weight: 700;
+      transition: all 0.15s ease;
+    }
+
+    .dock-btn:hover {
+      background: var(--primary-light);
+      color: var(--primary);
+      border-color: var(--primary);
+      transform: scale(1.06);
+    }
+
+    .dock-btn:active {
+      transform: scale(0.94);
+    }
+
+    .indicators-group {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .indicator-pill {
+      width: 12px;
+      height: 12px;
+      border-radius: 999px;
+      background: #CBD5E1;
+      cursor: pointer;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .indicator-pill:hover {
+      background: #94A3B8;
+    }
+
+    .indicator-pill.active {
+      width: 34px;
+      background: var(--primary);
+      box-shadow: 0 2px 8px rgba(29, 78, 216, 0.35);
+    }
+
+    .dock-counter {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--text-secondary);
+      padding: 0 6px;
+    }
+
+    /* Confetti Particle */
+    .confetti-dot {
+      position: fixed;
+      width: 8px;
+      height: 8px;
+      border-radius: 2px;
+      pointer-events: none;
+      z-index: 1000;
+    }
+
+    /* Responsive scaling for laptops & standard projectors */
+    @media (max-height: 740px) {
+      .slide {
+        padding: 24px 36px;
+      }
+      h1.slide-title {
+        font-size: 1.85rem;
+        margin-bottom: 4px;
+      }
+      p.slide-lead {
+        font-size: 0.95rem;
+        margin-bottom: 12px;
+      }
+      .hero-portrait-img {
+        height: 200px;
+      }
+      .clickable-cell {
+        gap: 10px;
+      }
+      .interactive-dot-btn {
+        width: 52px;
+        height: 52px;
+      }
+      .braille-grid-display {
+        grid-template-columns: repeat(2, 48px);
+        grid-template-rows: repeat(3, 48px);
+        gap: 10px;
+        padding: 16px;
+      }
+      .anatomy-dot {
+        width: 48px;
+        height: 48px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="bg-grid"></div>
+
+  <!-- Header -->
+  <header>
+    <div class="brand">
+      <span>🔬 Лаборатория открытий</span>
+      <span class="brand-tag">4 класс</span>
+    </div>
+
+    <div class="top-controls">
+      <button class="btn-toggle-mode" id="btnModeProjector" onclick="toggleProjectorMode()" title="Максимальный контраст для проектора в освещенном классе">
+        <span>📽️ Режим проектора</span>
+      </button>
+      <button class="btn-toggle-mode" id="btnFullscreen" onclick="toggleFullscreen()" title="Полноэкранный показ (клавиша F)">
+        <span>⛶ На весь экран</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Slide Stage -->
+  <main class="stage">
+
+    <!-- SLIDE 1: Титульный инженерный слайд -->
+    <section class="slide active" id="slide-0">
+      <div class="slide-badge">Урок-исследование • Человек и технологии</div>
+      <h1 class="slide-title">Код Брайля: Наука чтения кончиками пальцев</h1>
+      <p class="slide-lead">История о том, как 15-летний французский подросток решил инженерную задачу, изменившую жизнь миллионов людей во всём мире.</p>
+
+      <div class="hero-layout">
+        <div>
+          <div class="feature-card highlight">
+            <h3>Проблема, которую не могли решить веками</h3>
+            <p>До изобретения Брайля слепые люди пытались читать гигантские книги с выдавленными обычными буквами. Одна страница весила как кирпич, а на чтение одного предложения уходило несколько минут. Читать было мучительно трудно, а писать самим — невозможно.</p>
+          </div>
+
+          <div class="hero-facts">
+            <div class="fact-item">
+              <div class="label">Год рождения</div>
+              <div class="value">1809</div>
+            </div>
+            <div class="fact-item">
+              <div class="label">Возраст прорыва</div>
+              <div class="value">15 лет</div>
+            </div>
+            <div class="fact-item">
+              <div class="label">Элементов кода</div>
+              <div class="value">6 точек</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="hero-portrait-card">
+          <img src="louis-braille-portrait-photo-2.jpg" alt="Портрет Луи Брайля" class="hero-portrait-img">
+          <div class="hero-portrait-caption">Луи Брайль (1809–1852) — педагог, изобретатель, музыкант</div>
+          <div class="hero-portrait-quote">«Если мои глаза не видят мир, я научу свои пальцы понимать его.»</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 2: Хроника изобретения -->
+    <section class="slide" id="slide-1">
+      <div class="slide-badge">Хроника событий</div>
+      <h1 class="slide-title">Путь изобретателя: От мастерской до Пантеона</h1>
+      <p class="slide-lead">Луи не родился учёным — он был обычным любознательным мальчиком, столкнувшимся с тяжёлым испытанием.</p>
+
+      <div class="timeline-container">
+        <div class="timeline-step">
+          <div class="step-time">
+            <span class="step-year">1809–1812</span>
+            <span class="step-age">0 — 3 года</span>
+          </div>
+          <div class="step-body">
+            <h4>Детство в Кувре и роковая случайность</h4>
+            <p>Отец Луи был шорником (шил конскую упряжь). Играя в мастерской с острым шилом, 3-летний Луи случайно поранил глаз. Началось воспаление, и к 5 годам мальчик полностью ослеп.</p>
+          </div>
+        </div>
+
+        <div class="timeline-step">
+          <div class="step-time">
+            <span class="step-year">1819</span>
+            <span class="step-age">10 лет</span>
+          </div>
+          <div class="step-body">
+            <h4>Королевский институт для слепых детей в Париже</h4>
+            <p>Луи выигрывает стипендию. В школе всего 14 громоздких рельефных книг на всю библиотеку. Луи мечтает свободно читать историю, науку и ноты.</p>
+          </div>
+        </div>
+
+        <div class="timeline-step">
+          <div class="step-time">
+            <span class="step-year">1821</span>
+            <span class="step-age">12 лет</span>
+          </div>
+          <div class="step-body">
+            <h4>Встреча с «ночной азбукой» капитана Барбье</h4>
+            <p>В школу приезжает офицер Шарль Барбье. Он создал шифр из 12 выпуклых точек, чтобы солдаты читали донесения в темноте без огня. Система была слишком сложной, но Луи ухватился за эту идею!</p>
+          </div>
+        </div>
+
+        <div class="timeline-step">
+          <div class="step-time">
+            <span class="step-year">1824</span>
+            <span class="step-age">15 лет</span>
+          </div>
+          <div class="step-body">
+            <h4>Рождение 6-точечной системы Брайля</h4>
+            <p>Луи сократил ячейку ровно до 6 точек. Теперь символ целиком помещался под подушечку пальца. Слепые люди впервые смогли не только быстро читать, но и писать прибором и грифелем.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 3: Инженерная тайна: Почему именно 6 точек? -->
+    <section class="slide" id="slide-2">
+      <div class="slide-badge">Биомеханика и криптография</div>
+      <h1 class="slide-title">Инженерный секрет: Почему именно 6 точек?</h1>
+      <p class="slide-lead">Военный шифр из 12 точек провалился, а 6 точек Брайля покорили мир. В чём был научный расчёт подростка?</p>
+
+      <div class="grid-2">
+        <div class="cell-anatomy-box">
+          <div class="braille-grid-display">
+            <div class="anatomy-dot highlight">1</div>
+            <div class="anatomy-dot">4</div>
+            <div class="anatomy-dot highlight">2</div>
+            <div class="anatomy-dot">5</div>
+            <div class="anatomy-dot">3</div>
+            <div class="anatomy-dot">6</div>
+          </div>
+          <div class="formula-badge">
+            <span>📐 Математика кода:</span>
+            <span>2⁶ = 64 уникальные комбинации!</span>
+          </div>
+          <div style="font-size:0.85rem; color:var(--text-muted); text-align:center;">
+            Буквы алфавита, цифры, знаки препинания и даже нотные знаки для музыки.
+          </div>
+        </div>
+
+        <div style="display:flex; flex-direction:column; gap:16px;">
+          <div class="feature-card">
+            <div class="card-num">1</div>
+            <h3>Подушечка пальца человека</h3>
+            <p>Биология доказала: человек способен мгновенно распознать осязанием матрицу размером не более 6 точек без перемещения пальца. 12 точек Барбье требовали ощупывания сверху вниз, и мозг терял скорость восприятия.</p>
+          </div>
+
+          <div class="feature-card">
+            <div class="card-num">2</div>
+            <h3>Логичная нумерация</h3>
+            <p>Точки считаются сверху вниз: левый столбик — <strong>1, 2, 3</strong>; правый столбик — <strong>4, 5, 6</strong>. Например, буква <strong>«Б»</strong> — это точки 1 и 2.</p>
+          </div>
+
+          <div class="feature-card">
+            <div class="card-num">3</div>
+            <h3>Универсальность для всех языков</h3>
+            <p>Система оказалась настолько элегантной, что на неё переложили русский, английский, китайский языки, химические формулы и шахматные партии.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 4: Культура общения и этика -->
+    <section class="slide" id="slide-3">
+      <div class="slide-badge">Социальный интеллект • Этикет</div>
+      <h1 class="slide-title">Как общаться с незрячим человеком: Без мифов и жалости</h1>
+      <p class="slide-lead">Незрячие люди живут полной жизнью, учатся, работают программистами, переводчиками и музыкантами. Главное правило — уважение и естественность.</p>
+
+      <div class="etiquette-grid">
+        <div class="etiq-card myth">
+          <h3>
+            <span class="pill-icon">✕</span>
+            <span>Как делать НЕ нужно (Частые ошибки)</span>
+          </h3>
+          <ul class="etiq-list">
+            <li>
+              <span class="pill-icon">✕</span>
+              <div><strong>Не хватай внезапно за руку или трость.</strong> Это пугает и сбивает ориентир в пространстве.</div>
+            </li>
+            <li>
+              <span class="pill-icon">✕</span>
+              <div><strong>Не проявляй чрезмерную жалость.</strong> Не нужно причитать: «Ой, бедный, какое горе». Относись как к обычному человеку.</div>
+            </li>
+            <li>
+              <span class="pill-icon">✕</span>
+              <div><strong>Не бойся обычных слов «посмотри» или «увидимся».</strong> Незрячие спокойно используют их в своей речи каждый день.</div>
+            </li>
+            <li>
+              <span class="pill-icon">✕</span>
+              <div><strong>Не гладь собаку-поводыря на службе.</strong> Собака в специальной шлейке работает и отвечает за безопасность хозяина.</div>
+            </li>
+          </ul>
+        </div>
+
+        <div class="etiq-card truth">
+          <h3>
+            <span class="pill-icon">✓</span>
+            <span>Золотые правила уважительного общения</span>
+          </h3>
+          <ul class="etiq-list">
+            <li>
+              <span class="pill-icon">✓</span>
+              <div><strong>Назови себя голосом при встрече.</strong> «Привет, я Денис из 4-го "Б"». Человек узнает, кто рядом.</div>
+            </li>
+            <li>
+              <span class="pill-icon">✓</span>
+              <div><strong>Всегда спроси, нужна ли помощь.</strong> «Вам помочь перейти улицу?» И только если человек согласился — предложи локоть.</div>
+            </li>
+            <li>
+              <span class="pill-icon">✓</span>
+              <div><strong>Предупреждай, если уходишь.</strong> Не оставляй человека разговаривающим в пустоту. Просто скажи: «Я отойду на минутку».</div>
+            </li>
+            <li>
+              <span class="pill-icon">✓</span>
+              <div><strong>Описывай направление словами.</strong> Вместо «Вон там!» скажи: «Справа от вас в двух шагах дверь».</div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 5: Практикум «Собери символ» -->
+    <section class="slide" id="slide-4">
+      <div class="slide-badge">Интерактивная лаборатория</div>
+      <h1 class="slide-title">Практикум: Собери букву шрифта Брайля</h1>
+      <p class="slide-lead">Попробуй себя в роли наборщика книг. Посмотри на образец и собери верную комбинацию точек.</p>
+
+      <div class="builder-container">
+        <div class="target-preview-panel">
+          <div style="font-size:0.85rem; font-weight:700; color:var(--text-muted); text-transform:uppercase;">Задание: Собери букву</div>
+          <div class="target-letter-badge" id="buildTargetLetter">А</div>
+          <div style="font-size:0.9rem; color:var(--text-secondary); margin-bottom:6px;" id="buildTargetDesc">Точка 1 (верхняя левая)</div>
+          
+          <div class="target-braille-small" id="buildTargetVisual">
+            <!-- Dynamic target dots -->
+          </div>
+
+          <div style="font-weight:700; color:var(--text-muted); font-size:0.9rem;" id="buildProgressCounter">Буква 1 из 5</div>
+        </div>
+
+        <div class="interactive-board">
+          <div style="font-weight:700; font-size:1rem; color:var(--text-secondary);">
+            Нажимай на точки, чтобы включить нужные рельефные бугорки:
+          </div>
+
+          <div class="clickable-cell" id="userClickCell">
+            <!-- 6 buttons 1-6 -->
+          </div>
+
+          <div style="display:flex; gap:12px; align-items:center;">
+            <button class="btn-action" onclick="verifyLetterBuild()">
+              <span>Проверить комбинацию ✓</span>
+            </button>
+            <button class="quick-tag-btn" onclick="resetCurrentCell()">Сбросить точки</button>
+          </div>
+
+          <div id="buildFeedbackText" style="min-height:24px; font-weight:700; font-size:1rem; color:var(--primary);">
+            Собери шаблон слева и нажми «Проверить»
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 6: Интерактивный транслятор в реальном времени -->
+    <section class="slide" id="slide-5">
+      <div class="slide-badge">Живой тактильный декодер</div>
+      <h1 class="slide-title">Тактильный декодер: Преврати любое слово в шрифт Брайля</h1>
+      <p class="slide-lead">Напечатай слово или имя — и система мгновенно закодирует его в матрицу рельефных точек по официальному ГОСТу русского шрифта Брайля.</p>
+
+      <div class="translator-wrapper">
+        <div class="input-control-box">
+          <input type="text" id="liveTranslatorInput" placeholder="ВВЕДИ СЛОВО (НАПРИМЕР: КЛАСС, ДРУЖБА, КНИГА)" maxlength="16" value="КНИГА" autocomplete="off">
+          <button class="btn-action" onclick="renderLiveTranslation()">
+            <span>Закодировать ⤳</span>
+          </button>
+        </div>
+
+        <div class="quick-tags">
+          <span style="font-size:0.85rem; font-weight:700; color:var(--text-muted);">Быстрый выбор для класса:</span>
+          <button class="quick-tag-btn" onclick="setQuickWord('ЛУИ')">ЛУИ</button>
+          <button class="quick-tag-btn" onclick="setQuickWord('ШКОЛА')">ШКОЛА</button>
+          <button class="quick-tag-btn" onclick="setQuickWord('ПАРИЖ')">ПАРИЖ</button>
+          <button class="quick-tag-btn" onclick="setQuickWord('ДРУГ')">ДРУГ</button>
+          <button class="quick-tag-btn" onclick="setQuickWord('ЗНАНИЕ')">ЗНАНИЕ</button>
+          <button class="quick-tag-btn" onclick="setQuickWord('РОССИЯ')">РОССИЯ</button>
+        </div>
+
+        <div class="tactile-tape" id="tactileTapeResult">
+          <!-- Real-time braille cells -->
+        </div>
+
+        <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.88rem; color:var(--text-muted);">
+          <span id="translatorStatus">Слово «КНИГА» — 5 букв Брайля</span>
+          <span>Каждая буква считывается подушечкой указательного пальца слева направо</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 7: Интеллектуальный командный квиз -->
+    <section class="slide" id="slide-6">
+      <div class="slide-badge">Проверка знаний • Блиц-опрос</div>
+      <h1 class="slide-title">Инженерный квиз: Битва эрудитов 4 класса</h1>
+      <p class="slide-lead">Проверим, насколько внимательно класс слушал факты. Выбирайте один верный ответ!</p>
+
+      <div class="quiz-container">
+        <div class="quiz-card">
+          <div class="quiz-question-text">
+            <span class="quiz-num-badge" id="quizCurrentBadge">1</span>
+            <span id="quizQuestionBody">Загрузка вопроса...</span>
+          </div>
+
+          <div class="quiz-options-grid" id="quizOptionsContainer">
+            <!-- 4 options -->
+          </div>
+
+          <div class="quiz-progress-bar">
+            <div class="quiz-progress-fill" id="quizProgressBarFill"></div>
+          </div>
+        </div>
+
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <div id="quizResultVerdict" style="font-weight:700; font-size:1.05rem; color:var(--text-secondary);">
+            Вопрос 1 из 6
+          </div>
+          <button class="quick-tag-btn" onclick="restartQuiz()">Начать квиз сначала ↺</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 8: Финал и итоги урока (+ опция тактильной разминки) -->
+    <section class="slide" id="slide-7">
+      <div class="slide-badge">Итоги урока • Чему мы научились</div>
+      <h1 class="slide-title">Главный вывод: Знания открывают мир каждому</h1>
+      <p class="slide-lead">Подвиг Луи Брайля доказывает: упорство, наука и сочувствие к другим способны победить любые препятствия.</p>
+
+      <div class="grid-3">
+        <div class="feature-card highlight">
+          <div class="card-num">1</div>
+          <h3>Возраст не помеха</h3>
+          <p>Луи Брайль создал фундаментальное изобретение человечества в 15 лет — всего на 5 лет старше учеников 4 класса.</p>
+        </div>
+
+        <div class="feature-card highlight">
+          <div class="card-num">2</div>
+          <h3>Научный расчёт</h3>
+          <p>Гениальность шрифта — не в случайности, а в глубоком понимании возможностей человеческого осязания (матрица 2×3).</p>
+        </div>
+
+        <div class="feature-card highlight">
+          <div class="card-num">3</div>
+          <h3>Равные возможности</h3>
+          <p>Сегодня шрифт Брайля есть на лекарствах, в лифтах, на вокзалах и в умных тактильных дисплеях компьютеров.</p>
+        </div>
+      </div>
+
+      <!-- Опциональный блок разминки (по желанию учителя) -->
+      <div class="warmup-box">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <div style="font-weight:800; font-size:1.05rem; color:#1E3A8A;">
+            🖐️ Опция для урока: 2-минутный тактильный эксперимент в классе
+          </div>
+          <button class="quick-tag-btn" onclick="toggleWarmupDetails(this)">Развернуть инструкцию</button>
+        </div>
+        <div class="warmup-steps" id="warmupDetailsPanel" style="display:none;">
+          <div class="warmup-step-item">
+            <strong>1. Закрыть глаза</strong>
+            <p style="font-size:0.85rem; color:var(--text-secondary); margin-top:4px;">Все ученики закрывают глаза на 30 секунд и слушают окружающие звуки школы.</p>
+          </div>
+          <div class="warmup-step-item">
+            <strong>2. Нащупать предмет</strong>
+            <p style="font-size:0.85rem; color:var(--text-secondary); margin-top:4px;">С закрытыми глазами достать из пенала ручку, ластик или линейку только пальцами.</p>
+          </div>
+          <div class="warmup-step-item">
+            <strong>3. Обсудить ощущение</strong>
+            <p style="font-size:0.85rem; color:var(--text-secondary); margin-top:4px;">Почувствовать, насколько чувствительны пальцы, когда зрение выключено.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Navigation Dock -->
+  <footer class="dock">
+    <button class="dock-btn" onclick="navigateSlide(-1)" title="Предыдущий слайд (Стрелка влево)">‹</button>
+    
+    <div class="indicators-group" id="slideIndicators">
+      <!-- Generated via JS -->
+    </div>
+
+    <span class="dock-counter" id="slideCounterText">1 / 8</span>
+    
+    <button class="dock-btn" onclick="navigateSlide(1)" title="Следующий слайд (Стрелка вправо или Пробел)">›</button>
+  </footer>
+
+  <script>
+    /* ========================================================
+       1. WEB AUDIO API SOUND ENGINE (Friendly UI Sound Feedback)
+       ======================================================== */
+    let audioCtx = null;
+    function playTone(freq = 440, duration = 0.1, type = 'sine', volume = 0.12) {
+      try {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        gain.gain.setValueAtTime(volume, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+      } catch (e) {}
+    }
+
+    function soundSlideChange() { playTone(360, 0.08, 'triangle', 0.06); }
+    function soundDotToggle() { playTone(540, 0.05, 'sine', 0.08); }
+    function soundCorrect() {
+      playTone(523.25, 0.1, 'sine', 0.12);
+      setTimeout(() => playTone(659.25, 0.12, 'sine', 0.12), 90);
+      setTimeout(() => playTone(783.99, 0.22, 'sine', 0.14), 180);
+    }
+    function soundWrong() {
+      playTone(260, 0.12, 'sawtooth', 0.1);
+      setTimeout(() => playTone(210, 0.2, 'sawtooth', 0.1), 100);
+    }
+
+    /* ========================================================
+       2. CONGRATULATIONS CONFETTI EFFECT
+       ======================================================== */
+    function burstConfetti(originX, originY, amount = 40) {
+      const colors = ['#1D4ED8', '#0284C7', '#059669', '#D97706', '#9333EA', '#DC2626'];
+      const x = originX || window.innerWidth / 2;
+      const y = originY || window.innerHeight / 2;
+
+      for (let i = 0; i < amount; i++) {
+        const dot = document.createElement('div');
+        dot.className = 'confetti-dot';
+        dot.style.left = x + 'px';
+        dot.style.top = y + 'px';
+        dot.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+
+        const angle = Math.random() * Math.PI * 2;
+        const speed = 4 + Math.random() * 7;
+        let vx = Math.cos(angle) * speed;
+        let vy = Math.sin(angle) * speed - 2.5;
+        let life = 0;
+
+        document.body.appendChild(dot);
+        const timer = setInterval(() => {
+          life++;
+          vx *= 0.97;
+          vy += 0.3;
+          dot.style.left = (parseFloat(dot.style.left) + vx) + 'px';
+          dot.style.top = (parseFloat(dot.style.top) + vy) + 'px';
+          dot.style.opacity = (1 - life / 45).toString();
+          dot.style.transform = `rotate(${life * 10}deg)`;
+          if (life >= 45) {
+            clearInterval(timer);
+            dot.remove();
+          }
+        }, 16);
+      }
+    }
+
+    /* ========================================================
+       3. SLIDE DECK NAVIGATION LOGIC
+       ======================================================== */
+    const slides = Array.from(document.querySelectorAll('.slide'));
+    const indicatorsBox = document.getElementById('slideIndicators');
+    const counterText = document.getElementById('slideCounterText');
+    let currentSlideIdx = 0;
+    let pillElements = [];
+
+    function setupSlideDeck() {
+      indicatorsBox.innerHTML = '';
+      pillElements = [];
+      slides.forEach((_, i) => {
+        const pill = document.createElement('div');
+        pill.className = 'indicator-pill' + (i === 0 ? ' active' : '');
+        pill.title = 'Перейти к слайду ' + (i + 1);
+        pill.onclick = () => goToSlide(i);
+        indicatorsBox.appendChild(pill);
+        pillElements.push(pill);
+      });
+      updateSlideDisplay();
+    }
+
+    function goToSlide(targetIdx) {
+      if (targetIdx === currentSlideIdx) return;
+      slides[currentSlideIdx].classList.remove('active');
+      pillElements[currentSlideIdx].classList.remove('active');
+
+      currentSlideIdx = (targetIdx + slides.length) % slides.length;
+
+      slides[currentSlideIdx].classList.add('active');
+      pillElements[currentSlideIdx].classList.add('active');
+      updateSlideDisplay();
+      soundSlideChange();
+    }
+
+    function navigateSlide(direction) {
+      goToSlide(currentSlideIdx + direction);
+    }
+
+    function updateSlideDisplay() {
+      counterText.textContent = `${currentSlideIdx + 1} / ${slides.length}`;
+    }
+
+    // Keyboard navigation (Presenter clicker & laptop keys)
+    window.addEventListener('keydown', (e) => {
+      if (e.target.tagName === 'INPUT') return; // Don't intercept when typing in input
+      if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
+        e.preventDefault();
+        navigateSlide(1);
+      } else if (e.key === 'ArrowLeft' || e.key === 'PageUp' || e.key === 'Backspace') {
+        e.preventDefault();
+        navigateSlide(-1);
+      } else if (e.key.toLowerCase() === 'f') {
+        toggleFullscreen();
+      } else if (e.key.toLowerCase() === 'p') {
+        toggleProjectorMode();
+      }
+    });
+
+    // Touch swipe support for interactive screens & tablets
+    let touchStartX = 0;
+    window.addEventListener('touchstart', (e) => {
+      touchStartX = e.touches[0].clientX;
+    }, { passive: true });
+
+    window.addEventListener('touchend', (e) => {
+      const touchEndX = e.changedTouches[0].clientX;
+      const diff = touchEndX - touchStartX;
+      if (Math.abs(diff) > 60) {
+        if (diff < 0) navigateSlide(1);
+        else navigateSlide(-1);
+      }
+    }, { passive: true });
+
+    // Mode Toggle: Projector Mode (extra contrast, bold strokes)
+    function toggleProjectorMode() {
+      const body = document.body;
+      body.classList.toggle('mode-projector');
+      const isProjector = body.classList.contains('mode-projector');
+      const btn = document.getElementById('btnModeProjector');
+      btn.classList.toggle('active', isProjector);
+      playTone(500, 0.08, 'triangle', 0.1);
+    }
+
+    // Fullscreen Toggle
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(() => {});
+        document.getElementById('btnFullscreen').classList.add('active');
+      } else {
+        document.exitFullscreen().catch(() => {});
+        document.getElementById('btnFullscreen').classList.remove('active');
+      }
+    }
+
+    /* ========================================================
+       4. OFFICIAL RUSSIAN BRAILLE DICTIONARY (Standard 6-dot matrix)
+       Dot positions: 1:top-left, 2:mid-left, 3:bot-left, 
+                      4:top-right, 5:mid-right, 6:bot-right
+       Array representation: [d1, d2, d3, d4, d5, d6]
+       ======================================================== */
+    const BRAILLE_RU = {
+      'А': [1, 0, 0, 0, 0, 0],
+      'Б': [1, 1, 0, 0, 0, 0],
+      'В': [0, 1, 0, 1, 1, 1],
+      'Г': [1, 1, 0, 1, 1, 0],
+      'Д': [1, 0, 0, 1, 1, 0],
+      'Е': [1, 0, 0, 0, 1, 0],
+      'Ё': [1, 0, 0, 0, 0, 1],
+      'Ж': [0, 1, 0, 1, 1, 0],
+      'З': [1, 0, 1, 0, 1, 1],
+      'И': [0, 1, 0, 1, 0, 0],
+      'Й': [1, 1, 1, 1, 0, 1],
+      'К': [1, 0, 1, 0, 0, 0],
+      'Л': [1, 1, 1, 0, 0, 0],
+      'М': [1, 0, 1, 1, 0, 0],
+      'Н': [1, 0, 1, 1, 1, 0],
+      'О': [1, 0, 1, 0, 1, 0],
+      'П': [1, 1, 1, 1, 0, 0],
+      'Р': [1, 1, 1, 0, 1, 0],
+      'С': [0, 1, 1, 1, 0, 0],
+      'Т': [0, 1, 1, 1, 1, 0],
+      'У': [1, 0, 1, 0, 0, 1],
+      'Ф': [1, 1, 0, 1, 0, 0],
+      'Х': [1, 1, 0, 0, 1, 0],
+      'Ц': [1, 0, 0, 1, 0, 0],
+      'Ч': [1, 1, 1, 1, 1, 0],
+      'Ш': [1, 0, 0, 0, 1, 1],
+      'Щ': [1, 0, 1, 1, 0, 1],
+      'Ъ': [1, 1, 1, 0, 1, 1],
+      'Ы': [0, 1, 1, 1, 0, 1],
+      'Ь': [0, 1, 1, 1, 1, 1],
+      'Э': [0, 1, 0, 1, 0, 1],
+      'Ю': [1, 1, 0, 0, 1, 1],
+      'Я': [1, 1, 0, 1, 0, 1],
+      ' ': [0, 0, 0, 0, 0, 0]
+    };
+
+    /* ========================================================
+       5. SLIDE 5: BUILD LETTER PRACTICUM LOGIC
+       ======================================================== */
+    const buildChallenges = [
+      { letter: 'А', desc: 'Точка 1 (верхняя левая)' },
+      { letter: 'Б', desc: 'Точки 1 и 2 (левый столбик)' },
+      { letter: 'Л', desc: 'Точки 1, 2 и 3 (весь левый ряд)' },
+      { letter: 'К', desc: 'Точки 1 и 3 (верх и низ слева)' },
+      { letter: 'О', desc: 'Точки 1, 3 и 5' }
+    ];
+
+    let currentBuildRound = 0;
+    let userDotState = [0, 0, 0, 0, 0, 0];
+
+    function initBuilderSlide() {
+      // Build 6 clickable buttons in column order (1,2,3 left; 4,5,6 right)
+      // Display grid is 2 cols: row 1 (dot 1, dot 4), row 2 (dot 2, dot 5), row 3 (dot 3, dot 6)
+      const container = document.getElementById('userClickCell');
+      container.innerHTML = '';
+      
+      const gridMapping = [
+        { dotNum: 1, idx: 0 }, { dotNum: 4, idx: 3 },
+        { dotNum: 2, idx: 1 }, { dotNum: 5, idx: 4 },
+        { dotNum: 3, idx: 2 }, { dotNum: 6, idx: 5 }
+      ];
+
+      gridMapping.forEach(item => {
+        const btn = document.createElement('button');
+        btn.className = 'interactive-dot-btn';
+        btn.id = 'dotBtn_' + item.idx;
+        btn.textContent = item.dotNum;
+        btn.onclick = () => toggleUserDot(item.idx);
+        container.appendChild(btn);
+      });
+
+      loadBuildChallenge(0);
+    }
+
+    function toggleUserDot(dotIndex) {
+      userDotState[dotIndex] = userDotState[dotIndex] === 1 ? 0 : 1;
+      const btn = document.getElementById('dotBtn_' + dotIndex);
+      btn.classList.toggle('active', userDotState[dotIndex] === 1);
+      soundDotToggle();
+    }
+
+    function resetCurrentCell() {
+      userDotState = [0, 0, 0, 0, 0, 0];
+      for (let i = 0; i < 6; i++) {
+        const btn = document.getElementById('dotBtn_' + i);
+        if (btn) btn.classList.remove('active');
+      }
+      document.getElementById('buildFeedbackText').textContent = 'Точки сброшены. Выбери заново!';
+      document.getElementById('buildFeedbackText').style.color = 'var(--text-muted)';
+    }
+
+    function loadBuildChallenge(index) {
+      currentBuildRound = index;
+      const ch = buildChallenges[currentBuildRound];
+      document.getElementById('buildTargetLetter').textContent = ch.letter;
+      document.getElementById('buildTargetDesc').textContent = ch.desc;
+      document.getElementById('buildProgressCounter').textContent = `Буква ${currentBuildRound + 1} из ${buildChallenges.length}`;
+
+      // Render small visual guide
+      const visBox = document.getElementById('buildTargetVisual');
+      visBox.innerHTML = '';
+      const pat = BRAILLE_RU[ch.letter] || [0,0,0,0,0,0];
+      const gridOrder = [0, 3, 1, 4, 2, 5];
+      gridOrder.forEach(idx => {
+        const d = document.createElement('div');
+        d.className = 'target-dot-sm' + (pat[idx] ? ' on' : '');
+        visBox.appendChild(d);
+      });
+
+      resetCurrentCell();
+    }
+
+    function verifyLetterBuild() {
+      const ch = buildChallenges[currentBuildRound];
+      const expected = BRAILLE_RU[ch.letter];
+      const fb = document.getElementById('buildFeedbackText');
+
+      const isMatch = expected.every((val, i) => val === userDotState[i]);
+
+      if (isMatch) {
+        soundCorrect();
+        burstConfetti(window.innerWidth / 2, window.innerHeight / 2, 45);
+        fb.textContent = `🎉 Отлично! Буква «${ch.letter}» собрана абсолютно верно!`;
+        fb.style.color = 'var(--success)';
+
+        setTimeout(() => {
+          if (currentBuildRound + 1 < buildChallenges.length) {
+            loadBuildChallenge(currentBuildRound + 1);
+          } else {
+            fb.textContent = '🏆 Браво! Все буквы лабораторного практикума собраны!';
+            fb.style.color = 'var(--primary)';
+          }
+        }, 1200);
+      } else {
+        soundWrong();
+        fb.textContent = '❌ Не совсем точно. Сверься с образцом слева и попробуй ещё раз!';
+        fb.style.color = 'var(--danger)';
+      }
+    }
+
+    /* ========================================================
+       6. SLIDE 6: LIVE REAL-TIME TRANSLATOR
+       ======================================================== */
+    const liveInput = document.getElementById('liveTranslatorInput');
+    liveInput.addEventListener('input', () => {
+      renderLiveTranslation();
+    });
+
+    function setQuickWord(word) {
+      liveInput.value = word;
+      renderLiveTranslation();
+      playTone(480, 0.08, 'triangle', 0.1);
+    }
+
+    function renderLiveTranslation() {
+      const rawText = liveInput.value.toUpperCase();
+      const tape = document.getElementById('tactileTapeResult');
+      tape.innerHTML = '';
+
+      if (!rawText.trim()) {
+        tape.innerHTML = '<span style="color:var(--text-muted); font-size:1.1rem; font-weight:600;">Напечатай любое слово выше...</span>';
+        document.getElementById('translatorStatus').textContent = 'Ожидание ввода слова...';
+        return;
+      }
+
+      const gridOrder = [0, 3, 1, 4, 2, 5]; // Row 1 (1,4), Row 2 (2,5), Row 3 (3,6)
+
+      Array.from(rawText).forEach(char => {
+        const pattern = BRAILLE_RU[char] || [0,0,0,0,0,0];
+        
+        const cell = document.createElement('div');
+        cell.className = 'cipher-cell';
+
+        const grid = document.createElement('div');
+        grid.className = 'cipher-grid';
+
+        gridOrder.forEach(dotIdx => {
+          const dot = document.createElement('div');
+          dot.className = 'cipher-dot' + (pattern[dotIdx] ? ' on' : '');
+          grid.appendChild(dot);
+        });
+
+        const charLabel = document.createElement('div');
+        charLabel.className = 'cipher-char';
+        charLabel.textContent = char;
+
+        cell.appendChild(grid);
+        cell.appendChild(charLabel);
+        tape.appendChild(cell);
+      });
+
+      document.getElementById('translatorStatus').textContent = `Слово «${rawText}» — ${rawText.length} символов Брайля`;
+    }
+
+    /* ========================================================
+       7. SLIDE 7: INTERACTIVE QUIZ ARENA
+       ======================================================== */
+    const quizQuestions = [
+      {
+        question: "В каком возрасте Луи Брайль создал свою систему чтения?",
+        options: ["В 10 лет", "В 15 лет", "В 25 лет", "В 40 лет"],
+        correctIndex: 1,
+        explanation: "Луи усовершенствовал военный шифр Барбье и представил готовую систему в 15 лет!"
+      },
+      {
+        question: "Сколько точек входит в одну базовую ячейку Брайля?",
+        options: ["4 точки", "6 точек", "8 точек", "12 точек"],
+        correctIndex: 1,
+        explanation: "Ровно 6 точек (2 столбика по 3 точки). Именно столько распознает палец за 1 касание."
+      },
+      {
+        question: "Какой шифр вдохновил Луи на создание шрифта?",
+        options: ["Азбука Морзе", "«Ночная азбука» капитана Барбье", "Шифр Юлия Цезаря", "Морской семафор"],
+        correctIndex: 1,
+        explanation: "Шарль Барбье придумал 12-точечный военный код для передачи донесений в темноте."
+      },
+      {
+        question: "В каком году родился Луи Брайль?",
+        options: ["1709", "1809", "1909", "1852"],
+        correctIndex: 1,
+        explanation: "Луи родился 4 января 1809 года во Франции, в городе Кувре."
+      },
+      {
+        question: "Как правильно предложить помощь незрячему человеку на улице?",
+        options: [
+          "Молча взять за локоть и повести через дорогу",
+          "Подойти, представиться и вежливо спросить: «Вам помочь?»",
+          "Погладить собаку-поводыря и помахать рукой",
+          "Громко кричать, чтобы привлечь внимание прохожих"
+        ],
+        correctIndex: 1,
+        explanation: "Всегда сначала назовите себя голосом и спросите согласие, прежде чем помогать."
+      },
+      {
+        question: "Где сегодня в обычной жизни можно встретить шрифт Брайля?",
+        options: [
+          "Только в старинных библиотеках Парижа",
+          "На упаковках лекарств, в лифтах и на вокзалах",
+          "Нигде, его уже заменили голосовые помощники",
+          "Только в специальных военных штабах"
+        ],
+        correctIndex: 1,
+        explanation: "Шрифт Брайля стандартизирован и обязателен на медикаментах, кнопках лифтов и в музеях!"
+      }
+    ];
+
+    let currentQuizIndex = 0;
+    let quizScoreCount = 0;
+    let isQuizLocked = false;
+
+    function renderQuizStep(idx) {
+      isQuizLocked = false;
+      const qData = quizQuestions[idx];
+      document.getElementById('quizCurrentBadge').textContent = (idx + 1);
+      document.getElementById('quizQuestionBody').textContent = qData.question;
+      
+      const optContainer = document.getElementById('quizOptionsContainer');
+      optContainer.innerHTML = '';
+
+      qData.options.forEach((optText, optIdx) => {
+        const btn = document.createElement('button');
+        btn.className = 'quiz-btn';
+        btn.innerHTML = `<span>${optText}</span><span style="font-size:1.1rem; opacity:0.6;">→</span>`;
+        btn.onclick = () => handleQuizAnswer(optIdx, btn);
+        optContainer.appendChild(btn);
+      });
+
+      // Progress bar fill
+      const progressPct = ((idx) / quizQuestions.length) * 100;
+      document.getElementById('quizProgressBarFill').style.width = `${progressPct}%`;
+      document.getElementById('quizResultVerdict').textContent = `Вопрос ${idx + 1} из ${quizQuestions.length}`;
+    }
+
+    function handleQuizAnswer(selectedIdx, clickedBtn) {
+      if (isQuizLocked) return;
+      isQuizLocked = true;
+
+      const qData = quizQuestions[currentQuizIndex];
+      const optButtons = document.querySelectorAll('.quiz-btn');
+
+      if (selectedIdx === qData.correctIndex) {
+        clickedBtn.classList.add('correct');
+        quizScoreCount++;
+        soundCorrect();
+        burstConfetti(clickedBtn.getBoundingClientRect().left + clickedBtn.offsetWidth / 2, clickedBtn.getBoundingClientRect().top + clickedBtn.offsetHeight / 2, 35);
+        document.getElementById('quizResultVerdict').innerHTML = `<span style="color:var(--success);">✓ Верно! ${qData.explanation}</span>`;
+      } else {
+        clickedBtn.classList.add('wrong');
+        optButtons[qData.correctIndex].classList.add('correct');
+        soundWrong();
+        document.getElementById('quizResultVerdict').innerHTML = `<span style="color:var(--danger);">✕ Ошибка. Правильный ответ: ${qData.options[qData.correctIndex]}</span>`;
+      }
+
+      setTimeout(() => {
+        if (currentQuizIndex + 1 < quizQuestions.length) {
+          currentQuizIndex++;
+          renderQuizStep(currentQuizIndex);
+        } else {
+          finishQuiz();
+        }
+      }, 2000);
+    }
+
+    function finishQuiz() {
+      document.getElementById('quizProgressBarFill').style.width = '100%';
+      const percent = Math.round((quizScoreCount / quizQuestions.length) * 100);
+      const verdict = document.getElementById('quizResultVerdict');
+      
+      document.getElementById('quizQuestionBody').textContent = 'Квиз завершён! Результаты класса:';
+      document.getElementById('quizOptionsContainer').innerHTML = `
+        <div style="grid-column: span 2; background:var(--primary-light); border:1.5px solid var(--primary); padding:24px; border-radius:14px; text-align:center;">
+          <div style="font-size:2.4rem; font-weight:900; color:var(--primary); margin-bottom:8px;">${quizScoreCount} из ${quizQuestions.length} (${percent}%)</div>
+          <p style="font-size:1.1rem; font-weight:700; color:var(--text-main);">
+            ${percent === 100 ? '🌟 Абсолютный триумф! 4 класс блестяще освоил тему!' : (percent >= 70 ? '👍 Отличный результат! Вы настоящие знатоки науки!' : '💪 Хорошая попытка! Повторите факты и попробуйте снова!')}
+          </p>
+        </div>
+      `;
+
+      if (percent >= 70) {
+        burstConfetti(window.innerWidth / 2, window.innerHeight / 2, 70);
+      }
+    }
+
+    function restartQuiz() {
+      currentQuizIndex = 0;
+      quizScoreCount = 0;
+      renderQuizStep(0);
+      playTone(440, 0.08, 'triangle', 0.1);
+    }
+
+    /* ========================================================
+       8. SLIDE 8: OPTIONAL WARMUP PANEL TOGGLE
+       ======================================================== */
+    function toggleWarmupDetails(btn) {
+      const panel = document.getElementById('warmupDetailsPanel');
+      if (panel.style.display === 'none' || !panel.style.display) {
+        panel.style.display = 'grid';
+        btn.textContent = 'Свернуть инструкцию';
+      } else {
+        panel.style.display = 'none';
+        btn.textContent = 'Развернуть инструкцию';
+      }
+      playTone(450, 0.06, 'sine', 0.08);
+    }
+
+    /* ========================================================
+       INITIALIZATION
+       ======================================================== */
+    document.addEventListener('DOMContentLoaded', () => {
+      setupSlideDeck();
+      initBuilderSlide();
+      renderLiveTranslation();
+      renderQuizStep(0);
+    });
+  </script>
+</body>
+</html>
