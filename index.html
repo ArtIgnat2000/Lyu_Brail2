@@ -1,0 +1,1815 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Код Брайля: Наука чтения кончиками пальцев</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800;900&family=JetBrains+Mono:wght@600;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-canvas: #F8FAFC;
+      --card-bg: #FFFFFF;
+      --card-border: #E2E8F0;
+      --text-main: #0F172A;
+      --text-secondary: #334155;
+      --text-muted: #64748B;
+      
+      --primary: #1D4ED8;
+      --primary-light: #EFF6FF;
+      --primary-hover: #1E40AF;
+      --accent: #0284C7;
+      --success: #059669;
+      --success-light: #ECFDF5;
+      --warning: #D97706;
+      --warning-light: #FFFBEB;
+      --danger: #DC2626;
+      --danger-light: #FEF2F2;
+      
+      --card-radius: 20px;
+      --shadow-sm: 0 2px 4px rgba(15, 23, 42, 0.04), 0 1px 2px rgba(15, 23, 42, 0.03);
+      --shadow-md: 0 10px 25px -5px rgba(15, 23, 42, 0.07), 0 8px 10px -6px rgba(15, 23, 42, 0.04);
+      --shadow-lg: 0 20px 30px -10px rgba(15, 23, 42, 0.1);
+      --font-scale: 1;
+    }
+
+    body.mode-projector {
+      --bg-canvas: #FFFFFF;
+      --card-border: #CBD5E1;
+      --text-secondary: #0F172A;
+      --font-scale: 1.06;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background-color: var(--bg-canvas);
+      color: var(--text-main);
+      height: 100vh;
+      width: 100vw;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      user-select: none;
+    }
+
+    .bg-grid {
+      position: fixed;
+      inset: 0;
+      background-image: radial-gradient(circle at 1px 1px, rgba(148, 163, 184, 0.25) 1.2px, transparent 0);
+      background-size: 28px 28px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Top Bar */
+    header {
+      position: relative;
+      z-index: 10;
+      height: 54px;
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--card-border);
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(12px);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 800;
+      font-size: 1.05rem;
+      letter-spacing: -0.02em;
+    }
+
+    .brand-tag {
+      background: var(--primary-light);
+      color: var(--primary);
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      border: 1px solid rgba(29, 78, 216, 0.2);
+    }
+
+    .top-controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn-toggle-mode {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      border-radius: 8px;
+      border: 1px solid var(--card-border);
+      background: #FFFFFF;
+      color: var(--text-secondary);
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .btn-toggle-mode:hover {
+      background: var(--primary-light);
+      color: var(--primary);
+      border-color: var(--primary);
+    }
+    .btn-toggle-mode.active {
+      background: var(--primary);
+      color: #FFFFFF;
+      border-color: var(--primary);
+    }
+
+    /* Deck Container */
+    main.stage {
+      flex: 1;
+      position: relative;
+      z-index: 5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px 28px 76px;
+      overflow: hidden;
+    }
+
+    .slide {
+      position: absolute;
+      inset: 16px 28px 76px;
+      max-width: 1260px;
+      margin: 0 auto;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--card-radius);
+      box-shadow: var(--shadow-lg);
+      padding: 30px 42px;
+      display: flex;
+      flex-direction: column;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(14px) scale(0.985);
+      transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1), transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      overflow-y: auto;
+    }
+
+    .slide.active {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateY(0) scale(1);
+    }
+
+    .slide-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.82rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--primary);
+      margin-bottom: 4px;
+    }
+    .slide-badge::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--primary);
+    }
+
+    h1.slide-title {
+      font-size: calc(2.2rem * var(--font-scale));
+      font-weight: 900;
+      line-height: 1.15;
+      letter-spacing: -0.03em;
+      margin-bottom: 6px;
+    }
+
+    p.slide-lead {
+      font-size: calc(1.1rem * var(--font-scale));
+      color: var(--text-secondary);
+      font-weight: 600;
+      line-height: 1.4;
+      margin-bottom: 20px;
+    }
+
+    /* Visual Grid Layouts */
+    .visual-grid-hero {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 28px;
+      align-items: center;
+      flex: 1;
+    }
+
+    .visual-card {
+      position: relative;
+      background: #FFFFFF;
+      border: 1.5px solid var(--card-border);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .visual-card-img {
+      width: 100%;
+      height: 240px;
+      object-fit: cover;
+      display: block;
+      background: #F1F5F9;
+    }
+
+    .visual-card-body {
+      padding: 16px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .visual-card-title {
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: var(--text-main);
+    }
+
+    .visual-card-text {
+      font-size: 0.92rem;
+      color: var(--text-secondary);
+      font-weight: 500;
+      line-height: 1.4;
+    }
+
+    /* Timeline with Visual Story Cards */
+    .timeline-story-grid {
+      display: grid;
+      grid-template-columns: 0.9fr 1.1fr;
+      gap: 28px;
+      align-items: center;
+      flex: 1;
+    }
+
+    .story-timeline-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .story-node {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      background: #FFFFFF;
+      border: 1.5px solid var(--card-border);
+      border-radius: 14px;
+      padding: 12px 18px;
+      box-shadow: var(--shadow-sm);
+      transition: all 0.2s ease;
+    }
+
+    .story-node:hover {
+      border-color: var(--primary);
+      transform: translateX(4px);
+    }
+
+    .story-year-pill {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--primary);
+      background: var(--primary-light);
+      padding: 6px 12px;
+      border-radius: 8px;
+      flex-shrink: 0;
+    }
+
+    .story-node h4 {
+      font-size: 1.02rem;
+      font-weight: 800;
+      color: var(--text-main);
+    }
+
+    .story-node p {
+      font-size: 0.88rem;
+      color: var(--text-secondary);
+      margin-top: 2px;
+    }
+
+    /* Slide 3: Anatomy and Biomechanics */
+    .anatomy-flex-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 28px;
+      align-items: center;
+      flex: 1;
+    }
+
+    .tactile-photo-box {
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1.5px solid var(--card-border);
+      box-shadow: var(--shadow-md);
+      position: relative;
+    }
+
+    .tactile-photo-box img {
+      width: 100%;
+      height: 290px;
+      object-fit: cover;
+      display: block;
+    }
+
+    .tactile-badge-overlay {
+      position: absolute;
+      bottom: 12px;
+      left: 12px;
+      right: 12px;
+      background: rgba(15, 23, 42, 0.88);
+      color: #FFFFFF;
+      padding: 10px 16px;
+      border-radius: 10px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      backdrop-filter: blur(8px);
+    }
+
+    .anatomy-demo-box {
+      background: #F8FAFC;
+      border: 1.5px solid var(--card-border);
+      border-radius: 16px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .braille-grid-display {
+      display: grid;
+      grid-template-columns: repeat(2, 64px);
+      grid-template-rows: repeat(3, 64px);
+      gap: 16px;
+      background: #FFFFFF;
+      padding: 20px;
+      border-radius: 16px;
+      box-shadow: var(--shadow-md);
+      border: 2px dashed #94A3B8;
+    }
+
+    .anatomy-dot {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: #F1F5F9;
+      border: 2px solid #64748B;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 1.3rem;
+      color: var(--text-main);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .anatomy-dot.highlight {
+      background: var(--text-main);
+      color: #FFFFFF;
+      border-color: var(--text-main);
+      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.35);
+    }
+
+    /* Slide 4: Visual Etiquette Comparison */
+    .etiquette-visual-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      flex: 1;
+    }
+
+    .etiq-card {
+      border-radius: 16px;
+      padding: 20px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .etiq-card.myth {
+      background: var(--danger-light);
+      border: 1.5px solid rgba(220, 38, 38, 0.3);
+    }
+    .etiq-card.truth {
+      background: var(--success-light);
+      border: 1.5px solid rgba(5, 150, 105, 0.3);
+    }
+
+    .etiq-card h3 {
+      font-size: 1.15rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .myth h3 { color: var(--danger); }
+    .truth h3 { color: var(--success); }
+
+    .etiq-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      background: #FFFFFF;
+      padding: 12px 14px;
+      border-radius: 12px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .etiq-badge-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 0.9rem;
+      flex-shrink: 0;
+    }
+    .myth .etiq-badge-icon { background: #FEE2E2; color: #DC2626; }
+    .truth .etiq-badge-icon { background: #D1FAE5; color: #059669; }
+
+    .etiq-item strong {
+      display: block;
+      font-size: 0.95rem;
+      color: var(--text-main);
+      margin-bottom: 2px;
+    }
+    .etiq-item span {
+      font-size: 0.86rem;
+      color: var(--text-secondary);
+    }
+
+    /* Interactive Builder */
+    .builder-container {
+      display: grid;
+      grid-template-columns: 1fr 1.2fr;
+      gap: 32px;
+      align-items: center;
+      flex: 1;
+    }
+
+    .target-preview-panel {
+      background: #F8FAFC;
+      border: 1.5px solid var(--card-border);
+      border-radius: 18px;
+      padding: 24px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .target-letter-badge {
+      font-size: 3.2rem;
+      font-weight: 900;
+      color: var(--primary);
+      line-height: 1;
+      margin: 8px 0;
+    }
+
+    .target-braille-small {
+      display: grid;
+      grid-template-columns: repeat(2, 30px);
+      grid-template-rows: repeat(3, 30px);
+      gap: 10px;
+      background: #FFFFFF;
+      padding: 16px;
+      border-radius: 14px;
+      border: 1px solid var(--card-border);
+      margin: 12px 0;
+    }
+
+    .target-dot-sm {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: #E2E8F0;
+    }
+
+    .target-dot-sm.on {
+      background: var(--text-main);
+      box-shadow: 0 2px 6px rgba(15, 23, 42, 0.25);
+    }
+
+    .interactive-board {
+      background: #FFFFFF;
+      border: 2px solid var(--primary);
+      border-radius: 20px;
+      padding: 26px;
+      box-shadow: var(--shadow-md);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 18px;
+    }
+
+    .clickable-cell {
+      display: grid;
+      grid-template-columns: repeat(2, 68px);
+      grid-template-rows: repeat(3, 68px);
+      gap: 16px;
+    }
+
+    .interactive-dot-btn {
+      width: 68px;
+      height: 68px;
+      border-radius: 50%;
+      border: 3px solid #CBD5E1;
+      background: #F8FAFC;
+      cursor: pointer;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 800;
+      font-size: 1.3rem;
+      color: #94A3B8;
+      transition: all 0.15s ease-out;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .interactive-dot-btn:hover {
+      border-color: var(--primary);
+      background: var(--primary-light);
+      color: var(--primary);
+      transform: scale(1.05);
+    }
+
+    .interactive-dot-btn.active {
+      background: var(--text-main);
+      border-color: var(--text-main);
+      color: #FFFFFF;
+      box-shadow: 0 4px 14px rgba(15, 23, 42, 0.35);
+      transform: scale(0.96);
+    }
+
+    .btn-action {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 12px 26px;
+      border-radius: 12px;
+      background: var(--primary);
+      color: #FFFFFF;
+      border: none;
+      font-weight: 800;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 12px rgba(29, 78, 216, 0.25);
+    }
+    .btn-action:hover {
+      background: var(--primary-hover);
+      transform: translateY(-2px);
+    }
+
+    .quick-tag-btn {
+      padding: 6px 14px;
+      border-radius: 8px;
+      background: #F1F5F9;
+      border: 1px solid var(--card-border);
+      color: var(--text-secondary);
+      font-weight: 700;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .quick-tag-btn:hover {
+      background: var(--primary-light);
+      color: var(--primary);
+      border-color: var(--primary);
+    }
+
+    /* Translator */
+    .translator-wrapper {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      flex: 1;
+    }
+
+    .input-control-box {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .input-control-box input {
+      flex: 1;
+      padding: 12px 20px;
+      border: 2px solid var(--card-border);
+      border-radius: 12px;
+      font-size: 1.3rem;
+      font-weight: 800;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--text-main);
+      background: #FFFFFF;
+      outline: none;
+    }
+    .input-control-box input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(29, 78, 216, 0.12);
+    }
+
+    .tactile-tape {
+      background: #FFFFFF;
+      border: 1.5px solid var(--card-border);
+      border-radius: 18px;
+      padding: 24px;
+      min-height: 190px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      flex-wrap: wrap;
+      box-shadow: inset 0 2px 6px rgba(15, 23, 42, 0.03);
+    }
+
+    .cipher-cell {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      background: #F8FAFC;
+      border: 1.5px solid var(--card-border);
+      border-radius: 12px;
+      padding: 10px 12px;
+    }
+
+    .cipher-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 16px);
+      grid-template-rows: repeat(3, 16px);
+      gap: 6px;
+    }
+
+    .cipher-dot {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #E2E8F0;
+    }
+
+    .cipher-dot.on {
+      background: var(--text-main);
+      box-shadow: 0 2px 4px rgba(15, 23, 42, 0.3);
+    }
+
+    .cipher-char {
+      font-size: 1.2rem;
+      font-weight: 900;
+      color: var(--primary);
+    }
+
+    /* Quiz */
+    .quiz-container {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      flex: 1;
+    }
+
+    .quiz-card {
+      background: #FFFFFF;
+      border: 1.5px solid var(--card-border);
+      border-radius: 16px;
+      padding: 24px 28px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .quiz-question-text {
+      font-size: calc(1.3rem * var(--font-scale));
+      font-weight: 800;
+      color: var(--text-main);
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .quiz-num-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      background: var(--primary);
+      color: #FFFFFF;
+      font-size: 0.95rem;
+      font-weight: 800;
+    }
+
+    .quiz-options-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .quiz-btn {
+      padding: 16px 20px;
+      border-radius: 12px;
+      border: 2px solid var(--card-border);
+      background: #F8FAFC;
+      color: var(--text-main);
+      font-size: 1.05rem;
+      font-weight: 700;
+      text-align: left;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: all 0.2s ease;
+    }
+
+    .quiz-btn:hover:not(:disabled) {
+      border-color: var(--primary);
+      background: var(--primary-light);
+      color: var(--primary);
+      transform: translateY(-2px);
+    }
+
+    .quiz-btn.correct {
+      background: var(--success-light);
+      border-color: var(--success);
+      color: var(--success);
+      font-weight: 800;
+    }
+
+    .quiz-btn.wrong {
+      background: var(--danger-light);
+      border-color: var(--danger);
+      color: var(--danger);
+    }
+
+    .quiz-progress-bar {
+      height: 6px;
+      background: #E2E8F0;
+      border-radius: 999px;
+      overflow: hidden;
+      margin-top: 14px;
+    }
+
+    .quiz-progress-fill {
+      height: 100%;
+      background: var(--primary);
+      width: 16%;
+      transition: width 0.3s ease;
+    }
+
+    /* Modern Slide 8: Life Impact Visual Grid */
+    .impact-visual-grid {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 28px;
+      align-items: center;
+      flex: 1;
+    }
+
+    .impact-badges-column {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .impact-badge-card {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      background: #FFFFFF;
+      border: 1.5px solid var(--card-border);
+      border-radius: 14px;
+      padding: 14px 18px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .impact-badge-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: var(--primary-light);
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      flex-shrink: 0;
+    }
+
+    .impact-badge-card h4 {
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: var(--text-main);
+    }
+
+    .impact-badge-card p {
+      font-size: 0.88rem;
+      color: var(--text-secondary);
+      margin-top: 2px;
+    }
+
+    /* Navigation Dock */
+    footer.dock {
+      position: fixed;
+      bottom: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(14px);
+      border: 1px solid var(--card-border);
+      box-shadow: 0 10px 25px rgba(15, 23, 42, 0.12);
+      padding: 8px 18px;
+      border-radius: 999px;
+    }
+
+    .dock-btn {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      border: 1px solid var(--card-border);
+      background: #FFFFFF;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.15rem;
+      cursor: pointer;
+      font-weight: 700;
+      transition: all 0.15s ease;
+    }
+    .dock-btn:hover {
+      background: var(--primary-light);
+      color: var(--primary);
+      border-color: var(--primary);
+      transform: scale(1.06);
+    }
+
+    .indicators-group {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .indicator-pill {
+      width: 12px;
+      height: 12px;
+      border-radius: 999px;
+      background: #CBD5E1;
+      cursor: pointer;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .indicator-pill.active {
+      width: 34px;
+      background: var(--primary);
+      box-shadow: 0 2px 8px rgba(29, 78, 216, 0.35);
+    }
+
+    .dock-counter {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      font-weight: 800;
+      color: var(--text-secondary);
+      padding: 0 6px;
+    }
+
+    .confetti-dot {
+      position: fixed;
+      width: 8px;
+      height: 8px;
+      border-radius: 2px;
+      pointer-events: none;
+      z-index: 1000;
+    }
+
+    @media (max-height: 740px) {
+      .slide {
+        padding: 20px 32px;
+      }
+      h1.slide-title {
+        font-size: 1.8rem;
+      }
+      p.slide-lead {
+        font-size: 0.95rem;
+        margin-bottom: 12px;
+      }
+      .visual-card-img {
+        height: 180px;
+      }
+      .tactile-photo-box img {
+        height: 220px;
+      }
+      .braille-grid-display {
+        grid-template-columns: repeat(2, 48px);
+        grid-template-rows: repeat(3, 48px);
+        gap: 10px;
+        padding: 14px;
+      }
+      .anatomy-dot {
+        width: 48px;
+        height: 48px;
+      }
+      .clickable-cell {
+        gap: 10px;
+      }
+      .interactive-dot-btn {
+        width: 52px;
+        height: 52px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="bg-grid"></div>
+
+  <!-- Header -->
+  <header>
+    <div class="brand">
+      <span>🔬 Лаборатория открытий</span>
+      <span class="brand-tag">4 класс</span>
+    </div>
+
+    <div class="top-controls">
+      <button class="btn-toggle-mode" id="btnModeProjector" onclick="toggleProjectorMode()" title="Повышенный контраст для проектора (Клавиша P)">
+        <span>📽️ Режим проектора</span>
+      </button>
+      <button class="btn-toggle-mode" id="btnFullscreen" onclick="toggleFullscreen()" title="На весь экран (Клавиша F)">
+        <span>⛶ На весь экран</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Slide Stage -->
+  <main class="stage">
+
+    <!-- SLIDE 1: Титул с крупным визуалом -->
+    <section class="slide active" id="slide-0">
+      <div class="slide-badge">Урок-открытие • 4 класс</div>
+      <h1 class="slide-title">Код Брайля: Наука чтения кончиками пальцев</h1>
+      <p class="slide-lead">Как 15-летний школьник решил задачу, над которой столетиями ломали голову величайшие учёные.</p>
+
+      <div class="visual-grid-hero">
+        <div class="visual-card" style="box-shadow:var(--shadow-md);">
+          <img src="images/braille_finger_reading.jpg" alt="Чтение рельефного шрифта пальцами" class="visual-card-img" style="height:280px;">
+          <div class="visual-card-body">
+            <div class="visual-card-title">Чтение на кончиках пальцев</div>
+            <div class="visual-card-text">Вместо глаз — подушечка пальца. Вместо чернил — выпуклые рельефные точки.</div>
+          </div>
+        </div>
+
+        <div style="display:flex; flex-direction:column; gap:16px;">
+          <div class="visual-card" style="border-left: 5px solid var(--primary);">
+            <div class="visual-card-body">
+              <div style="font-size:0.8rem; font-weight:800; color:var(--primary); text-transform:uppercase;">Герой истории</div>
+              <div class="visual-card-title">Луи Брайль (1809–1852)</div>
+              <div class="visual-card-text">Мальчик из Франции, который ослеп в детстве, но подарил книги миллионам людей.</div>
+            </div>
+          </div>
+
+          <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:10px;">
+            <div style="background:var(--primary-light); padding:12px; border-radius:12px; text-align:center; border:1px solid #BFDBFE;">
+              <div style="font-size:0.72rem; font-weight:800; color:var(--primary);">ГОД</div>
+              <div style="font-size:1.3rem; font-weight:900; color:var(--text-main);">1809</div>
+            </div>
+            <div style="background:var(--primary-light); padding:12px; border-radius:12px; text-align:center; border:1px solid #BFDBFE;">
+              <div style="font-size:0.72rem; font-weight:800; color:var(--primary);">ВОЗРАСТ</div>
+              <div style="font-size:1.3rem; font-weight:900; color:var(--text-main);">15 лет</div>
+            </div>
+            <div style="background:var(--primary-light); padding:12px; border-radius:12px; text-align:center; border:1px solid #BFDBFE;">
+              <div style="font-size:0.72rem; font-weight:800; color:var(--primary);">ОСНОВА</div>
+              <div style="font-size:1.3rem; font-weight:900; color:var(--text-main);">6 точек</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 2: Хроника с картиной изобретения -->
+    <section class="slide" id="slide-1">
+      <div class="slide-badge">История изобретения</div>
+      <h1 class="slide-title">Как рождался алфавит: Шаги открытия</h1>
+      <p class="slide-lead">Луи был подростком, когда создал технологию, опередившую своё время.</p>
+
+      <div class="timeline-story-grid">
+        <div class="visual-card" style="box-shadow:var(--shadow-md);">
+          <img src="images/braille_workshop_invention.jpg" alt="15-летний Луи Брайль создаёт шрифт" class="visual-card-img" style="height:310px;">
+          <div class="visual-card-body">
+            <div class="visual-card-title">Париж, 1824 год</div>
+            <div class="visual-card-text">Луи прокалывает плотную бумагу грифелем, создавая первые буквы своего 6-точечного шифра.</div>
+          </div>
+        </div>
+
+        <div class="story-timeline-list">
+          <div class="story-node">
+            <span class="story-year-pill">1809</span>
+            <div>
+              <h4>Рождение в Кувре</h4>
+              <p>Мастерская отца-шорника и детская травма глаза шилом в 3 года.</p>
+            </div>
+          </div>
+
+          <div class="story-node">
+            <span class="story-year-pill">1819</span>
+            <div>
+              <h4>Институт для слепых детей</h4>
+              <p>10-летний Луи переезжает в Париж. В школьной библиотеке всего 14 тяжёлых книг.</p>
+            </div>
+          </div>
+
+          <div class="story-node">
+            <span class="story-year-pill">1821</span>
+            <div>
+              <h4>Шифр капитана Барбье</h4>
+              <p>Военный код из 12 точек для чтения приказов ночью без света. Слишком сложный, но дал толчок идее!</p>
+            </div>
+          </div>
+
+          <div class="story-node" style="border-color:var(--primary); background:#F8FAFC;">
+            <span class="story-year-pill" style="background:var(--primary); color:#FFF;">1824</span>
+            <div>
+              <h4>Триумф: 6 точек!</h4>
+              <p>В 15 лет Луи создаёт универсальный рельефный код, удобный для пальцев.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 3: Почему 6 точек? Сравнение фото и матрицы -->
+    <section class="slide" id="slide-2">
+      <div class="slide-badge">Биомеханика пальца</div>
+      <h1 class="slide-title">Почему ровно 6 точек? Секрет осязания</h1>
+      <p class="slide-lead">Военный шифр из 12 точек не прижился. Почему 6 точек стали идеальным решением?</p>
+
+      <div class="anatomy-flex-layout">
+        <div class="tactile-photo-box">
+          <img src="images/braille_finger_reading.jpg" alt="Подушечка пальца на шрифте Брайля">
+          <div class="tactile-badge-overlay">
+            🔍 <strong>Закон биологии:</strong> Подушечка указательного пальца человека мгновенно охватывает ровно 6 точек за 1 касание, не двигаясь вверх и вниз!
+          </div>
+        </div>
+
+        <div class="anatomy-demo-box">
+          <div style="font-size:0.95rem; font-weight:800; color:var(--text-main);">
+            Матрица ячейки Брайля: 2 столбика по 3 точки
+          </div>
+
+          <div class="braille-grid-display">
+            <div class="anatomy-dot highlight">1</div>
+            <div class="anatomy-dot">4</div>
+            <div class="anatomy-dot highlight">2</div>
+            <div class="anatomy-dot">5</div>
+            <div class="anatomy-dot">3</div>
+            <div class="anatomy-dot">6</div>
+          </div>
+
+          <div style="display:flex; gap:12px; width:100%;">
+            <div style="flex:1; background:#FFFFFF; border:1px solid var(--card-border); border-radius:12px; padding:12px; text-align:center;">
+              <div style="font-size:1.4rem; font-weight:900; color:var(--primary);">64</div>
+              <div style="font-size:0.75rem; font-weight:700; color:var(--text-muted); text-transform:uppercase;">комбинации (2⁶)</div>
+            </div>
+            <div style="flex:1; background:#FFFFFF; border:1px solid var(--card-border); border-radius:12px; padding:12px; text-align:center;">
+              <div style="font-size:1.4rem; font-weight:900; color:var(--success);">0.2 сек</div>
+              <div style="font-size:0.75rem; font-weight:700; color:var(--text-muted); text-transform:uppercase;">скорость распознавания</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 4: Этикет общения с фото-иллюстрацией -->
+    <section class="slide" id="slide-3">
+      <div class="slide-badge">Социальный этикет</div>
+      <h1 class="slide-title">Как общаться с незрячим: Главные правила</h1>
+      <p class="slide-lead">Незрячие люди — такие же, как мы. Важны уважение, вежливость и никакого страха.</p>
+
+      <div class="etiquette-visual-grid">
+        <div class="etiq-card myth">
+          <h3>
+            <span>🚫</span>
+            <span>Как делать НЕ нужно</span>
+          </h3>
+          <div class="etiq-item">
+            <div class="etiq-badge-icon">✕</div>
+            <div>
+              <strong>Не хватай внезапно за руку или белую трость</strong>
+              <span>Это пугает и лишает человека ориентации в пространстве.</span>
+            </div>
+          </div>
+          <div class="etiq-item">
+            <div class="etiq-badge-icon">✕</div>
+            <div>
+              <strong>Не проявляй притворной жалости («Ой, бедный…»)</strong>
+              <span>Незрячие люди самостоятельны, работают, учатся и путешествуют.</span>
+            </div>
+          </div>
+          <div class="etiq-item">
+            <div class="etiq-badge-icon">✕</div>
+            <div>
+              <strong>Не отвлекай и не гладь собаку-поводыря на службе</strong>
+              <span>Она в специальной шлейке и отвечает за безопасность хозяина.</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="etiq-card truth">
+          <h3>
+            <span>✅</span>
+            <span>Золотые правила дружбы</span>
+          </h3>
+          <div class="etiq-item">
+            <div class="etiq-badge-icon">✓</div>
+            <div>
+              <strong>Назови себя по имени при встрече</strong>
+              <span>«Привет, я Данил из 4-го класса!» — человеку сразу понятно, кто рядом.</span>
+            </div>
+          </div>
+          <div class="etiq-item">
+            <div class="etiq-badge-icon">✓</div>
+            <div>
+              <strong>Всегда спроси: «Вам помочь?»</strong>
+              <span>И если человек согласен — просто предложи свой локоть.</span>
+            </div>
+          </div>
+          <div class="etiq-item">
+            <div class="etiq-badge-icon">✓</div>
+            <div>
+              <strong>Спокойно говори слова «посмотри» и «увидимся»</strong>
+              <span>Незрячие люди используют эти слова так же, как и все остальные.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 5: Практикум «Собери букву» -->
+    <section class="slide" id="slide-4">
+      <div class="slide-badge">Интерактивная доска</div>
+      <h1 class="slide-title">Практикум: Собери букву шрифта Брайля</h1>
+      <p class="slide-lead">Посмотри на образец слева и включи верные рельефные точки справа.</p>
+
+      <div class="builder-container">
+        <div class="target-preview-panel">
+          <div style="font-size:0.85rem; font-weight:800; color:var(--text-muted); text-transform:uppercase;">Образец буквы:</div>
+          <div class="target-letter-badge" id="buildTargetLetter">А</div>
+          <div style="font-size:0.9rem; font-weight:700; color:var(--text-secondary); margin-bottom:6px;" id="buildTargetDesc">Точка 1 (верхняя левая)</div>
+          
+          <div class="target-braille-small" id="buildTargetVisual">
+            <!-- Dynamic dots -->
+          </div>
+
+          <div style="font-weight:800; color:var(--text-muted); font-size:0.9rem;" id="buildProgressCounter">Буква 1 из 5</div>
+        </div>
+
+        <div class="interactive-board">
+          <div style="font-weight:700; font-size:1rem; color:var(--text-secondary);">
+            Нажимай на точки (1–6):
+          </div>
+
+          <div class="clickable-cell" id="userClickCell">
+            <!-- 6 buttons -->
+          </div>
+
+          <div style="display:flex; gap:12px; align-items:center;">
+            <button class="btn-action" onclick="verifyLetterBuild()">
+              <span>Проверить комбинацию ✓</span>
+            </button>
+            <button class="quick-tag-btn" onclick="resetCurrentCell()">Сбросить</button>
+          </div>
+
+          <div id="buildFeedbackText" style="min-height:24px; font-weight:800; font-size:1rem; color:var(--primary);">
+            Собери комбинацию и нажми «Проверить»
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 6: Живой тактильный декодер -->
+    <section class="slide" id="slide-5">
+      <div class="slide-badge">Живой декодер слов</div>
+      <h1 class="slide-title">Тактильный декодер: Любое слово шрифтом Брайля</h1>
+      <p class="slide-lead">Введи имя или выбери карточку — слово сразу закодируется в рельефные точки по ГОСТу.</p>
+
+      <div class="translator-wrapper">
+        <div class="input-control-box">
+          <input type="text" id="liveTranslatorInput" placeholder="ВВЕДИ СЛОВО..." maxlength="14" value="КНИГА" autocomplete="off">
+          <button class="btn-action" onclick="renderLiveTranslation()">
+            <span>Закодировать ⤳</span>
+          </button>
+        </div>
+
+        <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+          <span style="font-size:0.85rem; font-weight:800; color:var(--text-muted);">Быстрый выбор:</span>
+          <button class="quick-tag-btn" onclick="setQuickWord('ЛУИ')">ЛУИ</button>
+          <button class="quick-tag-btn" onclick="setQuickWord('ШКОЛА')">ШКОЛА</button>
+          <button class="quick-tag-btn" onclick="setQuickWord('ПАРИЖ')">ПАРИЖ</button>
+          <button class="quick-tag-btn" onclick="setQuickWord('ДРУГ')">ДРУГ</button>
+          <button class="quick-tag-btn" onclick="setQuickWord('РОССИЯ')">РОССИЯ</button>
+        </div>
+
+        <div class="tactile-tape" id="tactileTapeResult">
+          <!-- Live Braille Cells -->
+        </div>
+
+        <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.88rem; color:var(--text-muted); font-weight:600;">
+          <span id="translatorStatus">Слово «КНИГА» — 5 букв Брайля</span>
+          <span>Чтение ведётся подушечкой указательного пальца слева направо</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 7: Командный квиз -->
+    <section class="slide" id="slide-6">
+      <div class="slide-badge">Блиц-опрос класса</div>
+      <h1 class="slide-title">Инженерный квиз: Битва эрудитов 4 класса</h1>
+      <p class="slide-lead">Проверим, кто самый внимательный! Выбирайте правильный ответ.</p>
+
+      <div class="quiz-container">
+        <div class="quiz-card">
+          <div class="quiz-question-text">
+            <span class="quiz-num-badge" id="quizCurrentBadge">1</span>
+            <span id="quizQuestionBody">Загрузка вопроса...</span>
+          </div>
+
+          <div class="quiz-options-grid" id="quizOptionsContainer">
+            <!-- Dynamic 4 Options -->
+          </div>
+
+          <div class="quiz-progress-bar">
+            <div class="quiz-progress-fill" id="quizProgressBarFill"></div>
+          </div>
+        </div>
+
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <div id="quizResultVerdict" style="font-weight:800; font-size:1.05rem; color:var(--text-secondary);">
+            Вопрос 1 из 6
+          </div>
+          <button class="quick-tag-btn" onclick="restartQuiz()">Сначала ↺</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 8: Брайль вокруг нас (Крупный фото-коллаж) -->
+    <section class="slide" id="slide-7">
+      <div class="slide-badge">Шрифт Брайля в реальной жизни</div>
+      <h1 class="slide-title">Брайль вокруг нас: Где его можно найти сегодня?</h1>
+      <p class="slide-lead">Изобретение 15-летнего подростка окружает нас в каждом городе мира.</p>
+
+      <div class="impact-visual-grid">
+        <div class="visual-card" style="box-shadow:var(--shadow-md);">
+          <img src="images/braille_everyday_life.jpg" alt="Брайль в реальной жизни: кнопки лифта, лекарства, собака-поводырь" class="visual-card-img" style="height:310px;">
+          <div class="visual-card-body">
+            <div class="visual-card-title">Городская доступная среда</div>
+            <div class="visual-card-text">Точки Брайля на кнопках лифта, коробках с лекарствами и музейных табличках.</div>
+          </div>
+        </div>
+
+        <div class="impact-badges-column">
+          <div class="impact-badge-card">
+            <div class="impact-badge-icon">💊</div>
+            <div>
+              <h4>Упаковки лекарств</h4>
+              <p>Название и дозировка выдавлены точками Брайля по закону.</p>
+            </div>
+          </div>
+
+          <div class="impact-badge-card">
+            <div class="impact-badge-icon">🛗</div>
+            <div>
+              <h4>Кнопки в лифтах и банкоматах</h4>
+              <p>Рядом с каждой цифрой этажа есть тактильные точки.</p>
+            </div>
+          </div>
+
+          <div class="impact-badge-card">
+            <div class="impact-badge-icon">💻</div>
+            <div>
+              <h4>Компьютерные дисплеи Брайля</h4>
+              <p>Специальная строчка с выдвигающимися штырьками для чтения сайтов.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Navigation Dock -->
+  <footer class="dock">
+    <button class="dock-btn" onclick="navigateSlide(-1)" title="Назад (Стрелка влево)">‹</button>
+    <div class="indicators-group" id="slideIndicators"></div>
+    <span class="dock-counter" id="slideCounterText">1 / 8</span>
+    <button class="dock-btn" onclick="navigateSlide(1)" title="Вперёд (Стрелка вправо или Пробел)">›</button>
+  </footer>
+
+  <script>
+    /* Audio Tone Engine */
+    let audioCtx = null;
+    function playTone(freq = 440, duration = 0.1, type = 'sine', volume = 0.12) {
+      try {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        gain.gain.setValueAtTime(volume, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+      } catch (e) {}
+    }
+
+    function soundSlideChange() { playTone(360, 0.08, 'triangle', 0.06); }
+    function soundDotToggle() { playTone(540, 0.05, 'sine', 0.08); }
+    function soundCorrect() {
+      playTone(523.25, 0.1, 'sine', 0.12);
+      setTimeout(() => playTone(659.25, 0.12, 'sine', 0.12), 90);
+      setTimeout(() => playTone(783.99, 0.22, 'sine', 0.14), 180);
+    }
+    function soundWrong() {
+      playTone(260, 0.12, 'sawtooth', 0.1);
+      setTimeout(() => playTone(210, 0.2, 'sawtooth', 0.1), 100);
+    }
+
+    /* Confetti */
+    function burstConfetti(originX, originY, amount = 40) {
+      const colors = ['#1D4ED8', '#0284C7', '#059669', '#D97706', '#9333EA', '#DC2626'];
+      const x = originX || window.innerWidth / 2;
+      const y = originY || window.innerHeight / 2;
+
+      for (let i = 0; i < amount; i++) {
+        const dot = document.createElement('div');
+        dot.className = 'confetti-dot';
+        dot.style.left = x + 'px';
+        dot.style.top = y + 'px';
+        dot.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+
+        const angle = Math.random() * Math.PI * 2;
+        const speed = 4 + Math.random() * 7;
+        let vx = Math.cos(angle) * speed;
+        let vy = Math.sin(angle) * speed - 2.5;
+        let life = 0;
+
+        document.body.appendChild(dot);
+        const timer = setInterval(() => {
+          life++;
+          vx *= 0.97;
+          vy += 0.3;
+          dot.style.left = (parseFloat(dot.style.left) + vx) + 'px';
+          dot.style.top = (parseFloat(dot.style.top) + vy) + 'px';
+          dot.style.opacity = (1 - life / 45).toString();
+          dot.style.transform = `rotate(${life * 10}deg)`;
+          if (life >= 45) {
+            clearInterval(timer);
+            dot.remove();
+          }
+        }, 16);
+      }
+    }
+
+    /* Deck Navigation */
+    const slides = Array.from(document.querySelectorAll('.slide'));
+    const indicatorsBox = document.getElementById('slideIndicators');
+    const counterText = document.getElementById('slideCounterText');
+    let currentSlideIdx = 0;
+    let pillElements = [];
+
+    function setupSlideDeck() {
+      indicatorsBox.innerHTML = '';
+      pillElements = [];
+      slides.forEach((_, i) => {
+        const pill = document.createElement('div');
+        pill.className = 'indicator-pill' + (i === 0 ? ' active' : '');
+        pill.title = 'Перейти к слайду ' + (i + 1);
+        pill.onclick = () => goToSlide(i);
+        indicatorsBox.appendChild(pill);
+        pillElements.push(pill);
+      });
+      updateSlideDisplay();
+    }
+
+    function goToSlide(targetIdx) {
+      if (targetIdx === currentSlideIdx) return;
+      slides[currentSlideIdx].classList.remove('active');
+      pillElements[currentSlideIdx].classList.remove('active');
+
+      currentSlideIdx = (targetIdx + slides.length) % slides.length;
+
+      slides[currentSlideIdx].classList.add('active');
+      pillElements[currentSlideIdx].classList.add('active');
+      updateSlideDisplay();
+      soundSlideChange();
+    }
+
+    function navigateSlide(direction) {
+      goToSlide(currentSlideIdx + direction);
+    }
+
+    function updateSlideDisplay() {
+      counterText.textContent = `${currentSlideIdx + 1} / ${slides.length}`;
+    }
+
+    window.addEventListener('keydown', (e) => {
+      if (e.target.tagName === 'INPUT') return;
+      if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
+        e.preventDefault();
+        navigateSlide(1);
+      } else if (e.key === 'ArrowLeft' || e.key === 'PageUp' || e.key === 'Backspace') {
+        e.preventDefault();
+        navigateSlide(-1);
+      } else if (e.key.toLowerCase() === 'f') {
+        toggleFullscreen();
+      } else if (e.key.toLowerCase() === 'p') {
+        toggleProjectorMode();
+      }
+    });
+
+    let touchStartX = 0;
+    window.addEventListener('touchstart', (e) => {
+      touchStartX = e.touches[0].clientX;
+    }, { passive: true });
+
+    window.addEventListener('touchend', (e) => {
+      const touchEndX = e.changedTouches[0].clientX;
+      const diff = touchEndX - touchStartX;
+      if (Math.abs(diff) > 60) {
+        if (diff < 0) navigateSlide(1);
+        else navigateSlide(-1);
+      }
+    }, { passive: true });
+
+    function toggleProjectorMode() {
+      const body = document.body;
+      body.classList.toggle('mode-projector');
+      const isProjector = body.classList.contains('mode-projector');
+      const btn = document.getElementById('btnModeProjector');
+      btn.classList.toggle('active', isProjector);
+      playTone(500, 0.08, 'triangle', 0.1);
+    }
+
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(() => {});
+        document.getElementById('btnFullscreen').classList.add('active');
+      } else {
+        document.exitFullscreen().catch(() => {});
+        document.getElementById('btnFullscreen').classList.remove('active');
+      }
+    }
+
+    /* Russian Braille Map */
+    const BRAILLE_RU = {
+      'А': [1, 0, 0, 0, 0, 0],
+      'Б': [1, 1, 0, 0, 0, 0],
+      'В': [0, 1, 0, 1, 1, 1],
+      'Г': [1, 1, 0, 1, 1, 0],
+      'Д': [1, 0, 0, 1, 1, 0],
+      'Е': [1, 0, 0, 0, 1, 0],
+      'Ё': [1, 0, 0, 0, 0, 1],
+      'Ж': [0, 1, 0, 1, 1, 0],
+      'З': [1, 0, 1, 0, 1, 1],
+      'И': [0, 1, 0, 1, 0, 0],
+      'Й': [1, 1, 1, 1, 0, 1],
+      'К': [1, 0, 1, 0, 0, 0],
+      'Л': [1, 1, 1, 0, 0, 0],
+      'М': [1, 0, 1, 1, 0, 0],
+      'Н': [1, 0, 1, 1, 1, 0],
+      'О': [1, 0, 1, 0, 1, 0],
+      'П': [1, 1, 1, 1, 0, 0],
+      'Р': [1, 1, 1, 0, 1, 0],
+      'С': [0, 1, 1, 1, 0, 0],
+      'Т': [0, 1, 1, 1, 1, 0],
+      'У': [1, 0, 1, 0, 0, 1],
+      'Ф': [1, 1, 0, 1, 0, 0],
+      'Х': [1, 1, 0, 0, 1, 0],
+      'Ц': [1, 0, 0, 1, 0, 0],
+      'Ч': [1, 1, 1, 1, 1, 0],
+      'Ш': [1, 0, 0, 0, 1, 1],
+      'Щ': [1, 0, 1, 1, 0, 1],
+      'Ъ': [1, 1, 1, 0, 1, 1],
+      'Ы': [0, 1, 1, 1, 0, 1],
+      'Ь': [0, 1, 1, 1, 1, 1],
+      'Э': [0, 1, 0, 1, 0, 1],
+      'Ю': [1, 1, 0, 0, 1, 1],
+      'Я': [1, 1, 0, 1, 0, 1],
+      ' ': [0, 0, 0, 0, 0, 0]
+    };
+
+    /* Practicum: Build Letter */
+    const buildChallenges = [
+      { letter: 'А', desc: 'Точка 1 (верхняя левая)' },
+      { letter: 'Б', desc: 'Точки 1 и 2 (левый столбик)' },
+      { letter: 'Л', desc: 'Точки 1, 2 и 3 (весь левый ряд)' },
+      { letter: 'К', desc: 'Точки 1 и 3 (верх и низ слева)' },
+      { letter: 'О', desc: 'Точки 1, 3 и 5' }
+    ];
+    let currentBuildRound = 0;
+    let userDotState = [0, 0, 0, 0, 0, 0];
+
+    function initBuilderSlide() {
+      const container = document.getElementById('userClickCell');
+      container.innerHTML = '';
+      
+      const gridMapping = [
+        { dotNum: 1, idx: 0 }, { dotNum: 4, idx: 3 },
+        { dotNum: 2, idx: 1 }, { dotNum: 5, idx: 4 },
+        { dotNum: 3, idx: 2 }, { dotNum: 6, idx: 5 }
+      ];
+
+      gridMapping.forEach(item => {
+        const btn = document.createElement('button');
+        btn.className = 'interactive-dot-btn';
+        btn.id = 'dotBtn_' + item.idx;
+        btn.textContent = item.dotNum;
+        btn.onclick = () => toggleUserDot(item.idx);
+        container.appendChild(btn);
+      });
+
+      loadBuildChallenge(0);
+    }
+
+    function toggleUserDot(dotIndex) {
+      userDotState[dotIndex] = userDotState[dotIndex] === 1 ? 0 : 1;
+      const btn = document.getElementById('dotBtn_' + dotIndex);
+      btn.classList.toggle('active', userDotState[dotIndex] === 1);
+      soundDotToggle();
+    }
+
+    function resetCurrentCell() {
+      userDotState = [0, 0, 0, 0, 0, 0];
+      for (let i = 0; i < 6; i++) {
+        const btn = document.getElementById('dotBtn_' + i);
+        if (btn) btn.classList.remove('active');
+      }
+      document.getElementById('buildFeedbackText').textContent = 'Точки сброшены. Выбери заново!';
+      document.getElementById('buildFeedbackText').style.color = 'var(--text-muted)';
+    }
+
+    function loadBuildChallenge(index) {
+      currentBuildRound = index;
+      const ch = buildChallenges[currentBuildRound];
+      document.getElementById('buildTargetLetter').textContent = ch.letter;
+      document.getElementById('buildTargetDesc').textContent = ch.desc;
+      document.getElementById('buildProgressCounter').textContent = `Буква ${currentBuildRound + 1} из ${buildChallenges.length}`;
+
+      const visBox = document.getElementById('buildTargetVisual');
+      visBox.innerHTML = '';
+      const pat = BRAILLE_RU[ch.letter] || [0,0,0,0,0,0];
+      const gridOrder = [0, 3, 1, 4, 2, 5];
+      gridOrder.forEach(idx => {
+        const d = document.createElement('div');
+        d.className = 'target-dot-sm' + (pat[idx] ? ' on' : '');
+        visBox.appendChild(d);
+      });
+
+      resetCurrentCell();
+    }
+
+    function verifyLetterBuild() {
+      const ch = buildChallenges[currentBuildRound];
+      const expected = BRAILLE_RU[ch.letter];
+      const fb = document.getElementById('buildFeedbackText');
+
+      const isMatch = expected.every((val, i) => val === userDotState[i]);
+
+      if (isMatch) {
+        soundCorrect();
+        burstConfetti(window.innerWidth / 2, window.innerHeight / 2, 45);
+        fb.textContent = `🎉 Отлично! Буква «${ch.letter}» собрана абсолютно верно!`;
+        fb.style.color = 'var(--success)';
+
+        setTimeout(() => {
+          if (currentBuildRound + 1 < buildChallenges.length) {
+            loadBuildChallenge(currentBuildRound + 1);
+          } else {
+            fb.textContent = '🏆 Браво! Все буквы лабораторного практикума собраны!';
+            fb.style.color = 'var(--primary)';
+          }
+        }, 1200);
+      } else {
+        soundWrong();
+        fb.textContent = '❌ Не совсем точно. Сверься с образцом слева!';
+        fb.style.color = 'var(--danger)';
+      }
+    }
+
+    /* Live Translator */
+    const liveInput = document.getElementById('liveTranslatorInput');
+    liveInput.addEventListener('input', () => { renderLiveTranslation(); });
+
+    function setQuickWord(word) {
+      liveInput.value = word;
+      renderLiveTranslation();
+      playTone(480, 0.08, 'triangle', 0.1);
+    }
+
+    function renderLiveTranslation() {
+      const rawText = liveInput.value.toUpperCase();
+      const tape = document.getElementById('tactileTapeResult');
+      tape.innerHTML = '';
+
+      if (!rawText.trim()) {
+        tape.innerHTML = '<span style="color:var(--text-muted); font-size:1.1rem; font-weight:600;">Напечатай слово выше...</span>';
+        document.getElementById('translatorStatus').textContent = 'Ожидание ввода слова...';
+        return;
+      }
+
+      const gridOrder = [0, 3, 1, 4, 2, 5];
+
+      Array.from(rawText).forEach(char => {
+        const pattern = BRAILLE_RU[char] || [0,0,0,0,0,0];
+        const cell = document.createElement('div');
+        cell.className = 'cipher-cell';
+
+        const grid = document.createElement('div');
+        grid.className = 'cipher-grid';
+
+        gridOrder.forEach(dotIdx => {
+          const dot = document.createElement('div');
+          dot.className = 'cipher-dot' + (pattern[dotIdx] ? ' on' : '');
+          grid.appendChild(dot);
+        });
+
+        const charLabel = document.createElement('div');
+        charLabel.className = 'cipher-char';
+        charLabel.textContent = char;
+
+        cell.appendChild(grid);
+        cell.appendChild(charLabel);
+        tape.appendChild(cell);
+      });
+
+      document.getElementById('translatorStatus').textContent = `Слово «${rawText}» — ${rawText.length} символов Брайля`;
+    }
+
+    /* Quiz */
+    const quizQuestions = [
+      {
+        question: "В каком возрасте Луи Брайль создал свою систему чтения?",
+        options: ["В 10 лет", "В 15 лет", "В 25 лет", "В 40 лет"],
+        correctIndex: 1,
+        explanation: "Луи усовершенствовал код Барбье и представил систему ровно в 15 лет!"
+      },
+      {
+        question: "Сколько точек входит в одну ячейку Брайля?",
+        options: ["4 точки", "6 точек", "8 точек", "12 точек"],
+        correctIndex: 1,
+        explanation: "Ровно 6 точек (2 столбика по 3). Именно столько палец охватывает за 1 касание."
+      },
+      {
+        question: "Какой военный код вдохновил Луи на изобретение?",
+        options: ["Азбука Морзе", "«Ночная азбука» капитана Барбье", "Шифр Цезаря", "Флажковый семафор"],
+        correctIndex: 1,
+        explanation: "Шарль Барбье придумал 12-точечный код для чтения донесений в ночной темноте."
+      },
+      {
+        question: "В каком году родился Луи Брайль?",
+        options: ["1709", "1809", "1909", "1852"],
+        correctIndex: 1,
+        explanation: "Луи родился 4 января 1809 года во Франции."
+      },
+      {
+        question: "Как правильно предложить помощь незрячему человеку на улице?",
+        options: [
+          "Молча взять за руку и потянуть",
+          "Подойти, назвать имя и спросить: «Вам помочь?»",
+          "Погладить собаку-поводыря",
+          "Громко кричать на всю улицу"
+        ],
+        correctIndex: 1,
+        explanation: "Всегда сначала представьтесь голосом и вежливо спросите согласие."
+      },
+      {
+        question: "Где сегодня в обычной жизни можно встретить шрифт Брайля?",
+        options: [
+          "Только в архивах Парижа",
+          "На упаковках лекарств, в лифтах и банкоматах",
+          "Нигде, его уже не используют",
+          "Только в секретных бункерах"
+        ],
+        correctIndex: 1,
+        explanation: "Шрифт Брайля стандартизирован и обязателен на медикаментах и кнопках лифтов!"
+      }
+    ];
+
+    let currentQuizIndex = 0;
+    let quizScoreCount = 0;
+    let isQuizLocked = false;
+
+    function renderQuizStep(idx) {
+      isQuizLocked = false;
+      const qData = quizQuestions[idx];
+      document.getElementById('quizCurrentBadge').textContent = (idx + 1);
+      document.getElementById('quizQuestionBody').textContent = qData.question;
+      
+      const optContainer = document.getElementById('quizOptionsContainer');
+      optContainer.innerHTML = '';
+
+      qData.options.forEach((optText, optIdx) => {
+        const btn = document.createElement('button');
+        btn.className = 'quiz-btn';
+        btn.innerHTML = `<span>${optText}</span><span style="font-size:1.1rem; opacity:0.6;">→</span>`;
+        btn.onclick = () => handleQuizAnswer(optIdx, btn);
+        optContainer.appendChild(btn);
+      });
+
+      const progressPct = ((idx) / quizQuestions.length) * 100;
+      document.getElementById('quizProgressBarFill').style.width = `${progressPct}%`;
+      document.getElementById('quizResultVerdict').textContent = `Вопрос ${idx + 1} из ${quizQuestions.length}`;
+    }
+
+    function handleQuizAnswer(selectedIdx, clickedBtn) {
+      if (isQuizLocked) return;
+      isQuizLocked = true;
+
+      const qData = quizQuestions[currentQuizIndex];
+      const optButtons = document.querySelectorAll('.quiz-btn');
+
+      if (selectedIdx === qData.correctIndex) {
+        clickedBtn.classList.add('correct');
+        quizScoreCount++;
+        soundCorrect();
+        burstConfetti(clickedBtn.getBoundingClientRect().left + clickedBtn.offsetWidth / 2, clickedBtn.getBoundingClientRect().top + clickedBtn.offsetHeight / 2, 35);
+        document.getElementById('quizResultVerdict').innerHTML = `<span style="color:var(--success);">✓ Верно! ${qData.explanation}</span>`;
+      } else {
+        clickedBtn.classList.add('wrong');
+        optButtons[qData.correctIndex].classList.add('correct');
+        soundWrong();
+        document.getElementById('quizResultVerdict').innerHTML = `<span style="color:var(--danger);">✕ Ошибка. Правильный ответ: ${qData.options[qData.correctIndex]}</span>`;
+      }
+
+      setTimeout(() => {
+        if (currentQuizIndex + 1 < quizQuestions.length) {
+          currentQuizIndex++;
+          renderQuizStep(currentQuizIndex);
+        } else {
+          finishQuiz();
+        }
+      }, 2000);
+    }
+
+    function finishQuiz() {
+      document.getElementById('quizProgressBarFill').style.width = '100%';
+      const percent = Math.round((quizScoreCount / quizQuestions.length) * 100);
+      
+      document.getElementById('quizQuestionBody').textContent = 'Квиз завершён! Результаты класса:';
+      document.getElementById('quizOptionsContainer').innerHTML = `
+        <div style="grid-column: span 2; background:var(--primary-light); border:1.5px solid var(--primary); padding:24px; border-radius:14px; text-align:center;">
+          <div style="font-size:2.4rem; font-weight:900; color:var(--primary); margin-bottom:8px;">${quizScoreCount} из ${quizQuestions.length} (${percent}%)</div>
+          <p style="font-size:1.1rem; font-weight:700; color:var(--text-main);">
+            ${percent === 100 ? '🌟 Абсолютный триумф! 4 класс блестяще знает тему!' : (percent >= 70 ? '👍 Отличный результат! Вы настоящие исследователи!' : '💪 Хорошая попытка! Повторите факты и попробуйте снова!')}
+          </p>
+        </div>
+      `;
+
+      if (percent >= 70) {
+        burstConfetti(window.innerWidth / 2, window.innerHeight / 2, 70);
+      }
+    }
+
+    function restartQuiz() {
+      currentQuizIndex = 0;
+      quizScoreCount = 0;
+      renderQuizStep(0);
+      playTone(440, 0.08, 'triangle', 0.1);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      setupSlideDeck();
+      initBuilderSlide();
+      renderLiveTranslation();
+      renderQuizStep(0);
+    });
+  </script>
+</body>
+</html>
