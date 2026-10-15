@@ -832,6 +832,171 @@
       margin-top: 2px;
     }
 
+    /* Цифры в декодере: знак числа */
+    .cipher-cell.number-sign {
+      background: var(--primary-light);
+      border-color: var(--primary);
+    }
+    .cipher-cell.number-sign .cipher-char {
+      font-size: 0.78rem;
+      line-height: 1.1;
+      text-align: center;
+    }
+
+    /* Slide 8: 2-min Tactile Experiment */
+    .experiment-panel {
+      margin-top: 18px;
+      background: var(--primary-light);
+      border: 1.5px solid rgba(29, 78, 216, 0.35);
+      border-radius: 16px;
+      padding: 16px 20px;
+      display: grid;
+      grid-template-columns: 1.35fr 0.65fr;
+      gap: 20px;
+      align-items: center;
+    }
+    .experiment-title {
+      font-size: 1.05rem;
+      font-weight: 900;
+      color: var(--text-main);
+      margin-bottom: 8px;
+    }
+    .experiment-steps {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .experiment-step {
+      flex: 1;
+      min-width: 130px;
+      background: #FFFFFF;
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 8px 10px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--text-secondary);
+      line-height: 1.3;
+    }
+    .experiment-step strong { color: var(--primary); }
+    .experiment-timer-box {
+      background: #FFFFFF;
+      border: 1.5px solid var(--card-border);
+      border-radius: 14px;
+      padding: 12px 16px;
+      text-align: center;
+    }
+    .experiment-timer-display {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--text-main);
+      line-height: 1;
+    }
+    .experiment-timer-bar {
+      height: 6px;
+      background: #E2E8F0;
+      border-radius: 999px;
+      overflow: hidden;
+      margin: 10px 0;
+    }
+    .experiment-timer-fill {
+      height: 100%;
+      background: var(--primary);
+      width: 100%;
+      transition: width 0.3s linear;
+    }
+    .experiment-status {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--text-secondary);
+      margin-top: 8px;
+      min-height: 18px;
+    }
+    @media (max-height: 740px) {
+      .experiment-panel { margin-top: 12px; padding: 12px 16px; }
+      .experiment-timer-display { font-size: 1.6rem; }
+    }
+
+    /* 3D Movie Slide */
+    .movie-layout {
+      display: grid;
+      grid-template-columns: 1.55fr 0.55fr;
+      gap: 24px;
+      align-items: stretch;
+      flex: 1;
+      min-height: 0;
+    }
+    .movie-screen {
+      position: relative;
+      background: linear-gradient(160deg, #EFF6FF 0%, #FFFFFF 55%, #ECFDF5 100%);
+      border: 1.5px solid var(--card-border);
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: var(--shadow-md);
+      min-height: 340px;
+    }
+    #braille3dCanvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+      cursor: grab;
+      touch-action: none;
+    }
+    #braille3dCanvas:active { cursor: grabbing; }
+    .movie-caption {
+      position: absolute;
+      left: 14px; right: 14px; bottom: 12px;
+      background: rgba(15, 23, 42, 0.9);
+      color: #FFFFFF;
+      border-radius: 12px;
+      padding: 10px 16px;
+      font-size: 1rem;
+      font-weight: 700;
+      text-align: center;
+      pointer-events: none;
+    }
+    .movie-caption strong { color: #93C5FD; }
+    .movie-progress {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 5px;
+      background: rgba(15, 23, 42, 0.08);
+    }
+    .movie-progress-fill {
+      height: 100%;
+      width: 0%;
+      background: var(--primary);
+      transition: width 0.15s linear;
+    }
+    .movie-side {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .movie-step {
+      background: #FFFFFF;
+      border: 1.5px solid var(--card-border);
+      border-radius: 12px;
+      padding: 10px 14px;
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--text-secondary);
+      line-height: 1.3;
+      transition: all 0.25s ease;
+    }
+    .movie-step strong { color: var(--text-main); display: block; font-size: 0.95rem; }
+    .movie-step.active {
+      border-color: var(--primary);
+      background: var(--primary-light);
+      transform: translateX(4px);
+    }
+    .movie-letter-row { display: flex; gap: 6px; flex-wrap: wrap; }
+    @media (max-height: 740px) {
+      .movie-screen { min-height: 260px; }
+      .movie-caption { font-size: 0.88rem; padding: 8px 12px; }
+    }
+
     /* Navigation Dock */
     footer.dock {
       position: fixed;
@@ -1105,6 +1270,39 @@
       </div>
     </section>
 
+    <!-- SLIDE: 3D-Кинотеатр -->
+    <section class="slide" id="slide-movie">
+      <div class="slide-badge">3D-Кинотеатр • Своя анимация, без интернета</div>
+      <h1 class="slide-title">3D-ролик: Как рождается буква Брайля</h1>
+      <p class="slide-lead">Нажми «Смотреть ролик» — а потом покрути 3D-ячейку мышкой сам!</p>
+
+      <div class="movie-layout">
+        <div class="movie-screen">
+          <canvas id="braille3dCanvas" title="Тяни мышкой, чтобы покрутить 3D-ячейку"></canvas>
+          <div class="movie-progress"><div class="movie-progress-fill" id="movieProgressFill"></div></div>
+          <div class="movie-caption" id="movieCaption">🎬 Готово к показу! Нажми <strong>«Смотреть ролик»</strong></div>
+        </div>
+
+        <div class="movie-side">
+          <button class="btn-action" id="moviePlayBtn" onclick="toggleMovie()">▶ Смотреть ролик</button>
+          <div class="movie-step" id="movieStep0"><strong>1. Грифель и бумага</strong>Точки прокалывают с обратной стороны листа</div>
+          <div class="movie-step" id="movieStep1"><strong>2. Точки вырастают</strong>Грифель выдавливает бугорки — точки 1, 2, 3</div>
+          <div class="movie-step" id="movieStep2"><strong>3. Переворот!</strong>Лист переворачивают — бугорки теперь сверху</div>
+          <div class="movie-step" id="movieStep3"><strong>4. Палец читает</strong>Подушечка пальца скользит — это буква «Л»!</div>
+          <div style="font-size:0.82rem; font-weight:800; color:var(--text-muted); text-transform:uppercase;">Или собери букву сам:</div>
+          <div class="movie-letter-row">
+            <button class="quick-tag-btn" onclick="setMovieLetter('А')">А</button>
+            <button class="quick-tag-btn" onclick="setMovieLetter('Б')">Б</button>
+            <button class="quick-tag-btn" onclick="setMovieLetter('К')">К</button>
+            <button class="quick-tag-btn" onclick="setMovieLetter('Л')">Л</button>
+            <button class="quick-tag-btn" onclick="setMovieLetter('О')">О</button>
+            <button class="quick-tag-btn" onclick="setMovieLetter('7')">7</button>
+          </div>
+          <div style="font-size:0.85rem; color:var(--text-secondary); font-weight:600;">🖱️ Тяни по экрану, чтобы вращать ячейку в 3D</div>
+        </div>
+      </div>
+    </section>
+
     <!-- SLIDE 4: Этикет общения с фото-иллюстрацией -->
     <section class="slide" id="slide-3">
       <div class="slide-badge">Социальный этикет</div>
@@ -1216,7 +1414,7 @@
     <section class="slide" id="slide-5">
       <div class="slide-badge">Живой декодер слов</div>
       <h1 class="slide-title">Тактильный декодер: Любое слово шрифтом Брайля</h1>
-      <p class="slide-lead">Введи имя или выбери карточку — слово сразу закодируется в рельефные точки по ГОСТу.</p>
+      <p class="slide-lead">Введи имя, слово или число — всё закодируется в рельефные точки по ГОСТу. Перед числом ставится знак числа: точки 3, 4, 5, 6.</p>
 
       <div class="translator-wrapper">
         <div class="input-control-box">
@@ -1233,6 +1431,8 @@
           <button class="quick-tag-btn" onclick="setQuickWord('ПАРИЖ')">ПАРИЖ</button>
           <button class="quick-tag-btn" onclick="setQuickWord('ДРУГ')">ДРУГ</button>
           <button class="quick-tag-btn" onclick="setQuickWord('РОССИЯ')">РОССИЯ</button>
+          <button class="quick-tag-btn" onclick="setQuickWord('1824')">1824</button>
+          <button class="quick-tag-btn" onclick="setQuickWord('4 КЛАСС')">4 КЛАСС</button>
         </div>
 
         <div class="tactile-tape" id="tactileTapeResult">
@@ -1270,7 +1470,7 @@
 
         <div style="display:flex; justify-content:space-between; align-items:center;">
           <div id="quizResultVerdict" style="font-weight:800; font-size:1.05rem; color:var(--text-secondary);">
-            Вопрос 1 из 6
+            Вопрос 1 из 7
           </div>
           <button class="quick-tag-btn" onclick="restartQuiz()">Сначала ↺</button>
         </div>
@@ -1285,7 +1485,7 @@
 
       <div class="impact-visual-grid">
         <div class="visual-card" style="box-shadow:var(--shadow-md);">
-          <img src="images/braille_everyday_life.jpg" alt="Брайль в реальной жизни: кнопки лифта, лекарства, собака-поводырь" class="visual-card-img" style="height:310px;">
+          <img src="images/braille_everyday_life.jpg" alt="Брайль в реальной жизни: кнопки лифта, лекарства, собака-поводырь" class="visual-card-img" style="height:225px;">
           <div class="visual-card-body">
             <div class="visual-card-title">Городская доступная среда</div>
             <div class="visual-card-text">Точки Брайля на кнопках лифта, коробках с лекарствами и музейных табличках.</div>
@@ -1318,6 +1518,26 @@
           </div>
         </div>
       </div>
+
+      <div class="experiment-panel">
+        <div>
+          <div class="experiment-title">🧪 Тактильный эксперимент для всего класса — 2 минуты</div>
+          <div class="experiment-steps">
+            <div class="experiment-step"><strong>1.</strong> Закрой глаза. Положи перед собой 3 предмета с парты.</div>
+            <div class="experiment-step"><strong>2.</strong> Только кончиками пальцев угадай каждый предмет.</div>
+            <div class="experiment-step"><strong>3.</strong> Открой глаза и проверь: легко ли «читать» пальцами?</div>
+          </div>
+        </div>
+        <div class="experiment-timer-box">
+          <div class="experiment-timer-display" id="experimentTimerDisplay">2:00</div>
+          <div class="experiment-timer-bar"><div class="experiment-timer-fill" id="experimentTimerFill"></div></div>
+          <div style="display:flex; gap:8px; justify-content:center;">
+            <button class="btn-action" id="experimentTimerBtn" onclick="toggleExperimentTimer()" style="padding:8px 18px; font-size:0.92rem;">▶ Запустить таймер</button>
+            <button class="quick-tag-btn" onclick="resetExperimentTimer()">Сброс</button>
+          </div>
+          <div class="experiment-status" id="experimentStatus">Нажми «Запустить» — у класса есть 2 минуты!</div>
+        </div>
+      </div>
     </section>
 
   </main>
@@ -1326,7 +1546,7 @@
   <footer class="dock">
     <button class="dock-btn" onclick="navigateSlide(-1)" title="Назад (Стрелка влево)">‹</button>
     <div class="indicators-group" id="slideIndicators"></div>
-    <span class="dock-counter" id="slideCounterText">1 / 8</span>
+    <span class="dock-counter" id="slideCounterText">1 / 9</span>
     <button class="dock-btn" onclick="navigateSlide(1)" title="Вперёд (Стрелка вправо или Пробел)">›</button>
   </footer>
 
@@ -1525,6 +1745,49 @@
       ' ': [0, 0, 0, 0, 0, 0]
     };
 
+    /* Цифры по Брайлю (ГОСТ): перед числом — цифровой знак (точки 3,4,5,6),
+       далее цифры 1–0 повторяют первые 10 ячеек a–j:
+       1=[1], 2=[1,2], 3=[1,4], 4=[1,4,5], 5=[1,5],
+       6=[1,2,4], 7=[1,2,4,5], 8=[1,2,5], 9=[2,4], 0=[2,4,5] */
+    const BRAILLE_NUMBER_SIGN = [0, 0, 1, 1, 1, 1];
+    const BRAILLE_DIGITS = {
+      '1': [1, 0, 0, 0, 0, 0],
+      '2': [1, 1, 0, 0, 0, 0],
+      '3': [1, 0, 0, 1, 0, 0],
+      '4': [1, 0, 0, 1, 1, 0],
+      '5': [1, 0, 0, 0, 1, 0],
+      '6': [1, 1, 0, 1, 0, 0],
+      '7': [1, 1, 0, 1, 1, 0],
+      '8': [1, 1, 0, 0, 1, 0],
+      '9': [0, 1, 0, 1, 0, 0],
+      '0': [0, 1, 0, 1, 1, 0]
+    };
+
+    /* Разворачивает текст в список ячеек Брайля.
+       Знак числа ставится ОДИН раз перед каждым числом (перед первой цифрой),
+       а не перед каждой цифрой: 1824 -> [знак числа][1][8][2][4] */
+    function textToBrailleCells(text) {
+      const cells = [];
+      let inNumber = false;
+      Array.from(text).forEach(char => {
+        if (BRAILLE_DIGITS[char]) {
+          if (!inNumber) {
+            cells.push({ pattern: BRAILLE_NUMBER_SIGN, label: 'знак числа', isNumberSign: true });
+            inNumber = true;
+          }
+          cells.push({ pattern: BRAILLE_DIGITS[char], label: char, isNumberSign: false });
+        } else {
+          inNumber = false;
+          if (BRAILLE_RU[char]) {
+            cells.push({ pattern: BRAILLE_RU[char], label: char === ' ' ? '␣' : char, isNumberSign: false });
+          } else {
+            cells.push({ pattern: [0, 0, 0, 0, 0, 0], label: char, isNumberSign: false, unsupported: true });
+          }
+        }
+      });
+      return cells;
+    }
+
     /* Practicum: Build Letter */
     const buildChallenges = [
       { letter: 'А', desc: 'Точка 1 (верхняя левая)' },
@@ -1645,11 +1908,13 @@
       }
 
       const gridOrder = [0, 3, 1, 4, 2, 5];
+      const cells = textToBrailleCells(rawText);
+      const hasDigits = /\d/.test(rawText);
 
-      Array.from(rawText).forEach(char => {
-        const pattern = BRAILLE_RU[char] || [0,0,0,0,0,0];
+      cells.forEach(({ pattern, label, isNumberSign }) => {
         const cell = document.createElement('div');
-        cell.className = 'cipher-cell';
+        cell.className = 'cipher-cell' + (isNumberSign ? ' number-sign' : '');
+        if (isNumberSign) cell.title = 'Знак числа: точки 3, 4, 5, 6';
 
         const grid = document.createElement('div');
         grid.className = 'cipher-grid';
@@ -1662,14 +1927,16 @@
 
         const charLabel = document.createElement('div');
         charLabel.className = 'cipher-char';
-        charLabel.textContent = char;
+        charLabel.textContent = label;
 
         cell.appendChild(grid);
         cell.appendChild(charLabel);
         tape.appendChild(cell);
       });
 
-      document.getElementById('translatorStatus').textContent = `Слово «${rawText}» — ${rawText.length} символов Брайля`;
+      document.getElementById('translatorStatus').textContent = hasDigits
+        ? `«${rawText}» — ${cells.length} ячеек Брайля (знак числа ⠼ + цифры)`
+        : `Слово «${rawText}» — ${cells.length} символов Брайля`;
     }
 
     /* Quiz */
@@ -1719,6 +1986,17 @@
         ],
         correctIndex: 1,
         explanation: "Шрифт Брайля стандартизирован и обязателен на медикаментах и кнопках лифтов!"
+      },
+      {
+        question: "Что ставится перед числом, записанным шрифтом Брайля?",
+        options: [
+          "Ничего, цифры пишутся как буквы",
+          "Специальный знак числа (точки 3, 4, 5, 6)",
+          "Три пробела",
+          "Восклицательный знак"
+        ],
+        correctIndex: 1,
+        explanation: "Знак числа ⠼ (точки 3,4,5,6) ставится один раз перед числом, а дальше цифры 1–0 идут как первые буквы a–j!"
       }
     ];
 
@@ -1802,6 +2080,376 @@
       quizScoreCount = 0;
       renderQuizStep(0);
       playTone(440, 0.08, 'triangle', 0.1);
+    }
+
+    /* Slide 8: 2-Minute Tactile Experiment Timer */
+    const EXPERIMENT_DURATION = 120;
+    let experimentTimeLeft = EXPERIMENT_DURATION;
+    let experimentTimerId = null;
+
+    function updateExperimentDisplay() {
+      const display = document.getElementById('experimentTimerDisplay');
+      const fill = document.getElementById('experimentTimerFill');
+      if (!display || !fill) return;
+      const mins = Math.floor(experimentTimeLeft / 60);
+      const secs = experimentTimeLeft % 60;
+      display.textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
+      fill.style.width = `${(experimentTimeLeft / EXPERIMENT_DURATION) * 100}%`;
+    }
+
+    function toggleExperimentTimer() {
+      const btn = document.getElementById('experimentTimerBtn');
+      const status = document.getElementById('experimentStatus');
+      if (experimentTimerId) {
+        clearInterval(experimentTimerId);
+        experimentTimerId = null;
+        btn.textContent = '▶ Продолжить';
+        status.textContent = 'Пауза. Нажмите «Продолжить», когда класс будет готов.';
+        return;
+      }
+      if (experimentTimeLeft <= 0) experimentTimeLeft = EXPERIMENT_DURATION;
+      btn.textContent = '⏸ Пауза';
+      status.textContent = 'Эксперимент идёт! Глаза закрыты — работают только пальцы.';
+      playTone(520, 0.08, 'triangle', 0.1);
+      experimentTimerId = setInterval(() => {
+        experimentTimeLeft--;
+        updateExperimentDisplay();
+        if (experimentTimeLeft <= 10 && experimentTimeLeft > 0) playTone(660, 0.05, 'sine', 0.07);
+        if (experimentTimeLeft <= 0) {
+          clearInterval(experimentTimerId);
+          experimentTimerId = null;
+          experimentTimeLeft = 0;
+          updateExperimentDisplay();
+          btn.textContent = '▶ Запустить таймер';
+          status.textContent = '⏰ Время вышло! Открываем глаза и обсуждаем: что было угадать труднее всего?';
+          soundCorrect();
+          burstConfetti(window.innerWidth / 2, window.innerHeight / 2, 50);
+        }
+      }, 1000);
+    }
+
+    function resetExperimentTimer() {
+      if (experimentTimerId) { clearInterval(experimentTimerId); experimentTimerId = null; }
+      experimentTimeLeft = EXPERIMENT_DURATION;
+      updateExperimentDisplay();
+      document.getElementById('experimentTimerBtn').textContent = '▶ Запустить таймер';
+      document.getElementById('experimentStatus').textContent = 'Нажми «Запустить» — у класса есть 2 минуты!';
+      playTone(440, 0.08, 'triangle', 0.1);
+    }
+
+    /* ===== 3D Movie: How a Braille Letter Is Born (pure Canvas 3D, no libraries) ===== */
+    const MOVIE_DURATION = 24000;
+    const movie = {
+      playing: false,
+      startedAt: 0,
+      elapsed: 0,
+      heights: [0, 0, 0, 0, 0, 0],
+      targets: [0, 0, 0, 0, 0, 0],
+      dragYaw: -0.55,
+      dragPitch: 0.85,
+      autoYaw: 0,
+      flipExtra: 0,
+      phase: -1,
+      finaleLetter: '',
+      manualCaption: '',
+      stylusDot: -1,
+      stylusDip: 0,
+      fingerX: null,
+      dragging: false
+    };
+    const MOVIE_FINALE = ['А', 'Б', 'К', 'Л', 'О'];
+    const movieCanvas = document.getElementById('braille3dCanvas');
+
+    function setMoviePhase(idx, captionHtml) {
+      if (movie.phase === idx) return;
+      movie.phase = idx;
+      for (let i = 0; i < 4; i++) {
+        const el = document.getElementById('movieStep' + i);
+        if (el) el.classList.toggle('active', i === idx);
+      }
+      if (captionHtml) document.getElementById('movieCaption').innerHTML = captionHtml;
+    }
+
+    function patternForChar(ch) {
+      if (BRAILLE_DIGITS[ch]) return BRAILLE_DIGITS[ch];
+      return BRAILLE_RU[ch] || [0, 0, 0, 0, 0, 0];
+    }
+
+    function toggleMovie() {
+      const btn = document.getElementById('moviePlayBtn');
+      if (movie.playing) {
+        movie.elapsed = performance.now() - movie.startedAt;
+        movie.playing = false;
+        btn.textContent = '▶ Продолжить ролик';
+        return;
+      }
+      if (movie.elapsed >= MOVIE_DURATION) movie.elapsed = 0;
+      movie.startedAt = performance.now() - movie.elapsed;
+      movie.playing = true;
+      movie.manualCaption = '';
+      btn.textContent = '⏸ Пауза';
+      playTone(520, 0.08, 'triangle', 0.1);
+    }
+
+    function setMovieLetter(ch) {
+      movie.playing = false;
+      movie.elapsed = 0;
+      movie.phase = -1;
+      movie.flipExtra = 0;
+      movie.fingerX = null;
+      movie.stylusDot = -1;
+      for (let i = 0; i < 4; i++) document.getElementById('movieStep' + i).classList.remove('active');
+      document.getElementById('moviePlayBtn').textContent = '▶ Смотреть ролик';
+      document.getElementById('movieProgressFill').style.width = '0%';
+      movie.targets = patternForChar(ch).slice();
+      document.getElementById('movieCaption').innerHTML = BRAILLE_DIGITS[ch]
+        ? `Цифра <strong>«${ch}»</strong>: перед ней ставят знак числа ⠼, а эта ячейка — сама цифра!`
+        : `Буква <strong>«${ch}»</strong> — покрути её мышкой! Тёмные точки — выпуклые.`;
+      soundDotToggle();
+    }
+
+    function movieFrameAt(progress) {
+      /* Returns the desired state for a given point in the film */
+      const frame = { targets: [0,0,0,0,0,0], flip: 0, stylusDot: -1, stylusDip: 0, fingerX: null, phase: 0, caption: '' };
+      const L = BRAILLE_RU['Л'];
+      if (progress < 0.16) {
+        frame.phase = 0;
+        frame.caption = '🎬 Лист плотной бумаги и острый грифель. Сейчас начнётся <strong>инженерия!</strong>';
+      } else if (progress < 0.44) {
+        frame.phase = 1;
+        frame.caption = '✒️ Грифель прокалывает бумагу <strong>с обратной стороны</strong> — точки 1, 2, 3!';
+        const local = (progress - 0.16) / 0.28;
+        const activeIdx = [0, 1, 2];
+        activeIdx.forEach((dotIdx, k) => {
+          const dotLocal = Math.min(1, Math.max(0, local * 3 - k));
+          const eased = 1 - Math.pow(1 - dotLocal, 3);
+          frame.targets[dotIdx] = eased;
+          if (dotLocal > 0 && dotLocal < 1) { frame.stylusDot = dotIdx; frame.stylusDip = Math.sin(dotLocal * Math.PI); }
+        });
+        if (local >= 1) frame.stylusDot = -1;
+      } else if (progress < 0.60) {
+        frame.phase = 2;
+        frame.caption = '🔄 <strong>Переворачиваем лист!</strong> Вмятины стали выпуклыми бугорками.';
+        frame.targets = L.slice();
+        const local = (progress - 0.44) / 0.16;
+        frame.flip = Math.PI * (local < 0.5 ? 2 * local * local : 1 - Math.pow(-2 * local + 2, 2) / 2);
+      } else if (progress < 0.84) {
+        frame.phase = 3;
+        frame.caption = '👆 Палец скользит по бугоркам… Это буква <strong>«Л»</strong> — точки 1, 2, 3!';
+        frame.targets = L.slice();
+        frame.flip = Math.PI;
+        const local = (progress - 0.60) / 0.24;
+        frame.fingerX = -1.05 + local * 2.1;
+      } else {
+        frame.phase = 3;
+        const local = (progress - 0.84) / 0.16;
+        frame.flip = Math.PI;
+        const ch = MOVIE_FINALE[Math.min(MOVIE_FINALE.length - 1, Math.floor(local * MOVIE_FINALE.length))];
+        frame.targets = patternForChar(ch).slice();
+        frame.caption = `✨ Из 6 точек — <strong>64 комбинации!</strong> Это буква <strong>«${ch}»</strong>. Ролик можно смотреть ещё раз!`;
+        movie.finaleLetter = ch;
+      }
+      return frame;
+    }
+
+    function drawBraille3D(now) {
+      const slide = document.getElementById('slide-movie');
+      requestAnimationFrame(drawBraille3D);
+      if (!slide || !slide.classList.contains('active') || !movieCanvas) return;
+
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const wCss = movieCanvas.clientWidth, hCss = movieCanvas.clientHeight;
+      if (!wCss || !hCss) return;
+      if (movieCanvas.width !== Math.round(wCss * dpr) || movieCanvas.height !== Math.round(hCss * dpr)) {
+        movieCanvas.width = Math.round(wCss * dpr);
+        movieCanvas.height = Math.round(hCss * dpr);
+      }
+      const ctx = movieCanvas.getContext('2d');
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      const W = wCss, H = hCss;
+
+      /* Timeline */
+      let bigLetter = '';
+      if (movie.playing) {
+        movie.elapsed = now - movie.startedAt;
+        if (movie.elapsed >= MOVIE_DURATION) {
+          movie.elapsed = MOVIE_DURATION;
+          movie.playing = false;
+          document.getElementById('moviePlayBtn').textContent = '▶ Смотреть ещё раз';
+        }
+        const progress = Math.min(1, movie.elapsed / MOVIE_DURATION);
+        const frame = movieFrameAt(progress);
+        movie.targets = frame.targets;
+        movie.flipExtra = frame.flip;
+        movie.stylusDot = frame.stylusDot;
+        movie.stylusDip = frame.stylusDip;
+        movie.fingerX = frame.fingerX;
+        setMoviePhase(frame.phase, frame.caption);
+        document.getElementById('movieProgressFill').style.width = `${progress * 100}%`;
+        if (progress >= 0.60) bigLetter = progress >= 0.84 ? movie.finaleLetter : 'Л';
+      } else if (movie.elapsed > 0 && movie.phase >= 0) {
+        const frame = movieFrameAt(Math.min(1, movie.elapsed / MOVIE_DURATION));
+        movie.targets = frame.targets;
+        movie.flipExtra = frame.flip;
+        movie.fingerX = frame.fingerX;
+        if (movie.elapsed >= MOVIE_DURATION && movie.finaleLetter) bigLetter = movie.finaleLetter;
+        else if (movie.elapsed / MOVIE_DURATION >= 0.60) bigLetter = 'Л';
+      }
+
+      /* Smooth dot growth */
+      for (let i = 0; i < 6; i++) movie.heights[i] += (movie.targets[i] - movie.heights[i]) * 0.18;
+
+      if (!movie.dragging) movie.autoYaw += 0.0022;
+      const yaw = movie.dragYaw + movie.autoYaw + movie.flipExtra;
+      const pitch = movie.dragPitch;
+      const cosY = Math.cos(yaw), sinY = Math.sin(yaw), cosP = Math.cos(pitch), sinP = Math.sin(pitch);
+      const unit = Math.min(W, H) * 0.27;
+      const cx = W / 2, cy = H / 2 - 10;
+      const FOCAL = 6;
+
+      function project(x, y, z) {
+        const x1 = x * cosY - z * sinY;
+        const z1 = x * sinY + z * cosY;
+        const y2 = y * cosP - z1 * sinP;
+        const z2 = y * sinP + z1 * cosP;
+        const s = FOCAL / (FOCAL + z2);
+        return { x: cx + x1 * s * unit, y: cy - y2 * s * unit, s: s, depth: z2 };
+      }
+
+      ctx.clearRect(0, 0, W, H);
+
+      /* Paper slab (top + side) */
+      const corners = [[-1.7, -1.55], [1.7, -1.55], [1.7, 1.55], [-1.7, 1.55]];
+      const topPts = corners.map(c => project(c[0], 0, c[1]));
+      const botPts = corners.map(c => project(c[0], -0.24, c[1]));
+      ctx.beginPath();
+      botPts.forEach((p, i) => i ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y));
+      ctx.closePath();
+      ctx.fillStyle = '#CBD5E1';
+      ctx.fill();
+      ctx.beginPath();
+      topPts.forEach((p, i) => i ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y));
+      ctx.closePath();
+      ctx.fillStyle = '#FFFFFF';
+      ctx.fill();
+      ctx.strokeStyle = '#94A3B8';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+
+      /* Faint guides for empty dots */
+      const dotXZ = [[-0.55, -0.95], [-0.55, 0], [-0.55, 0.95], [0.55, -0.95], [0.55, 0], [0.55, 0.95]];
+
+      /* Dots sorted far -> near */
+      const dots = dotXZ.map((xz, i) => {
+        const h = movie.heights[i];
+        const c = project(xz[0], 0.06 + h * 0.30, xz[1]);
+        return { i, x: xz[0], z: xz[1], h, c };
+      }).sort((a, b) => b.c.depth - a.c.depth);
+
+      dots.forEach(d => {
+        const r = 0.34 * d.c.s * unit;
+        /* shadow */
+        const sh = project(d.x, 0.012, d.z);
+        ctx.beginPath();
+        ctx.ellipse(sh.x, sh.y, r * 0.95, r * 0.38, 0, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(15, 23, 42, 0.13)';
+        ctx.fill();
+
+        const touched = movie.fingerX !== null && Math.abs(d.x - movie.fingerX) < 0.62;
+        if (d.h > 0.04) {
+          const grad = ctx.createRadialGradient(d.c.x - r * 0.35, d.c.y - r * 0.4, r * 0.15, d.c.x, d.c.y, r);
+          if (touched) { grad.addColorStop(0, '#BFDBFE'); grad.addColorStop(0.45, '#3B82F6'); grad.addColorStop(1, '#1E40AF'); }
+          else { grad.addColorStop(0, '#F8FAFC'); grad.addColorStop(0.45, '#334155'); grad.addColorStop(1, '#0F172A'); }
+          ctx.beginPath();
+          ctx.arc(d.c.x, d.c.y, r * (0.55 + 0.45 * d.h), 0, Math.PI * 2);
+          ctx.fillStyle = grad;
+          ctx.fill();
+          ctx.strokeStyle = 'rgba(15, 23, 42, 0.35)';
+          ctx.lineWidth = 1;
+          ctx.stroke();
+        } else {
+          ctx.beginPath();
+          ctx.arc(d.c.x, d.c.y, r * 0.5, 0, Math.PI * 2);
+          ctx.fillStyle = '#E2E8F0';
+          ctx.fill();
+          ctx.strokeStyle = '#94A3B8';
+          ctx.stroke();
+          ctx.fillStyle = '#64748B';
+          ctx.font = `800 ${Math.max(11, r * 0.55)}px 'JetBrains Mono', monospace`;
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText(String(d.i + 1), d.c.x, d.c.y);
+        }
+      });
+
+      /* Stylus (phase: punching) */
+      if (movie.stylusDot >= 0) {
+        const xz = dotXZ[movie.stylusDot];
+        const tip = project(xz[0], 0.35 - movie.stylusDip * 0.28, xz[1]);
+        const top = project(xz[0] + 0.35, 1.55 - movie.stylusDip * 0.28, xz[1] - 0.2);
+        ctx.beginPath();
+        ctx.moveTo(tip.x, tip.y);
+        ctx.lineTo(top.x - 11, top.y);
+        ctx.lineTo(top.x + 11, top.y);
+        ctx.closePath();
+        ctx.fillStyle = '#D97706';
+        ctx.fill();
+        ctx.strokeStyle = '#92400E';
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.arc(tip.x, tip.y, 5, 0, Math.PI * 2);
+        ctx.fillStyle = '#0F172A';
+        ctx.fill();
+      }
+
+      /* Fingertip (phase: reading) */
+      if (movie.fingerX !== null) {
+        const fc = project(movie.fingerX, 0.62, 0);
+        const fr = unit * 0.62;
+        const grad = ctx.createRadialGradient(fc.x - fr * 0.3, fc.y - fr * 0.35, fr * 0.2, fc.x, fc.y, fr);
+        grad.addColorStop(0, 'rgba(255, 217, 179, 0.97)');
+        grad.addColorStop(0.65, 'rgba(242, 192, 154, 0.97)');
+        grad.addColorStop(1, 'rgba(232, 155, 106, 0.97)');
+        ctx.beginPath();
+        ctx.ellipse(fc.x, fc.y, fr, fr * 0.82, 0, 0, Math.PI * 2);
+        ctx.fillStyle = grad;
+        ctx.fill();
+        ctx.strokeStyle = 'rgba(146, 64, 14, 0.4)';
+        ctx.stroke();
+        ctx.strokeStyle = 'rgba(146, 64, 14, 0.30)';
+        for (let a = 0.25; a < 0.85; a += 0.2) {
+          ctx.beginPath();
+          ctx.ellipse(fc.x, fc.y, fr * a, fr * a * 0.82, 0, 0.3, Math.PI - 0.3);
+          ctx.stroke();
+        }
+      }
+
+      /* Floating decoded letter */
+      if (bigLetter) {
+        ctx.fillStyle = '#1D4ED8';
+        ctx.font = `900 ${Math.min(92, unit * 0.85)}px 'Plus Jakarta Sans', sans-serif`;
+        ctx.textAlign = 'right';
+        ctx.textBaseline = 'top';
+        ctx.fillText(bigLetter, W - 26, 18);
+      }
+    }
+
+    if (movieCanvas) {
+      let lastPX = 0, lastPY = 0;
+      movieCanvas.addEventListener('pointerdown', e => {
+        movie.dragging = true;
+        lastPX = e.clientX; lastPY = e.clientY;
+        movieCanvas.setPointerCapture(e.pointerId);
+      });
+      movieCanvas.addEventListener('pointermove', e => {
+        if (!movie.dragging) return;
+        movie.dragYaw += (e.clientX - lastPX) * 0.008;
+        movie.dragPitch = Math.min(1.25, Math.max(0.25, movie.dragPitch + (e.clientY - lastPY) * 0.006));
+        lastPX = e.clientX; lastPY = e.clientY;
+      });
+      ['pointerup', 'pointercancel'].forEach(ev => movieCanvas.addEventListener(ev, () => { movie.dragging = false; }));
+      requestAnimationFrame(drawBraille3D);
     }
 
     document.addEventListener('DOMContentLoaded', () => {
