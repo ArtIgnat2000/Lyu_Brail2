@@ -6,10 +6,9 @@
   <title>Код Брайля: Наука чтения кончиками пальцев</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800;900&family=JetBrains+Mono:wght@600;800&display=swap" rel="stylesheet">
   <style>
     :root {
-      /* Base Daylight Palette (WCAG AAA contrast on light backgrounds) */
       --bg-canvas: #F8FAFC;
       --card-bg: #FFFFFF;
       --card-border: #E2E8F0;
@@ -17,35 +16,29 @@
       --text-secondary: #334155;
       --text-muted: #64748B;
       
-      /* Distinct Laboratory Theme Colors */
-      --primary: #1D4ED8;       /* Deep Royal Blue */
+      --primary: #1D4ED8;
       --primary-light: #EFF6FF;
       --primary-hover: #1E40AF;
-      --accent: #0284C7;        /* Tech Cyan */
-      --success: #059669;       /* Deep Emerald */
+      --accent: #0284C7;
+      --success: #059669;
       --success-light: #ECFDF5;
-      --warning: #D97706;       /* Warm Amber */
+      --warning: #D97706;
       --warning-light: #FFFBEB;
-      --danger: #DC2626;        /* Clear Coral Red */
+      --danger: #DC2626;
       --danger-light: #FEF2F2;
-      --dot-active: #0F172A;    /* Solid dark ink tactile dot */
-      --dot-inactive: #CBD5E1;
       
-      /* Presentation Geometry */
-      --slide-ratio: 16 / 9;
       --card-radius: 20px;
       --shadow-sm: 0 2px 4px rgba(15, 23, 42, 0.04), 0 1px 2px rgba(15, 23, 42, 0.03);
-      --shadow-md: 0 10px 25px -5px rgba(15, 23, 42, 0.06), 0 8px 10px -6px rgba(15, 23, 42, 0.04);
-      --shadow-lg: 0 20px 30px -10px rgba(15, 23, 42, 0.08);
+      --shadow-md: 0 10px 25px -5px rgba(15, 23, 42, 0.07), 0 8px 10px -6px rgba(15, 23, 42, 0.04);
+      --shadow-lg: 0 20px 30px -10px rgba(15, 23, 42, 0.1);
       --font-scale: 1;
     }
 
-    /* Screen mode variations */
     body.mode-projector {
       --bg-canvas: #FFFFFF;
       --card-border: #CBD5E1;
-      --text-secondary: #1E293B;
-      --font-scale: 1.08;
+      --text-secondary: #0F172A;
+      --font-scale: 1.06;
     }
 
     * {
@@ -67,28 +60,26 @@
       user-select: none;
     }
 
-    /* Subtle background grid pattern representing precision laboratory graph paper */
     .bg-grid {
       position: fixed;
       inset: 0;
-      background-image: 
-        radial-gradient(circle at 1px 1px, rgba(148, 163, 184, 0.25) 1.2px, transparent 0);
+      background-image: radial-gradient(circle at 1px 1px, rgba(148, 163, 184, 0.25) 1.2px, transparent 0);
       background-size: 28px 28px;
       pointer-events: none;
       z-index: 0;
     }
 
-    /* Header Bar */
+    /* Top Bar */
     header {
       position: relative;
       z-index: 10;
-      height: 58px;
+      height: 54px;
       padding: 0 24px;
       display: flex;
       align-items: center;
       justify-content: space-between;
       border-bottom: 1px solid var(--card-border);
-      background: rgba(255, 255, 255, 0.9);
+      background: rgba(255, 255, 255, 0.95);
       backdrop-filter: blur(12px);
     }
 
@@ -98,7 +89,6 @@
       gap: 10px;
       font-weight: 800;
       font-size: 1.05rem;
-      color: var(--text-main);
       letter-spacing: -0.02em;
     }
 
@@ -145,7 +135,7 @@
       border-color: var(--primary);
     }
 
-    /* Main Deck Stage */
+    /* Deck Container */
     main.stage {
       flex: 1;
       position: relative;
@@ -153,27 +143,26 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 20px 32px 80px;
+      padding: 16px 28px 76px;
       overflow: hidden;
     }
 
     .slide {
       position: absolute;
-      inset: 20px 32px 80px;
-      max-width: 1220px;
+      inset: 16px 28px 76px;
+      max-width: 1260px;
       margin: 0 auto;
       background: var(--card-bg);
       border: 1px solid var(--card-border);
       border-radius: var(--card-radius);
       box-shadow: var(--shadow-lg);
-      padding: 40px 52px;
+      padding: 30px 42px;
       display: flex;
       flex-direction: column;
       opacity: 0;
       pointer-events: none;
-      transform: translateY(16px) scale(0.985);
-      transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1), 
-                  transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+      transform: translateY(14px) scale(0.985);
+      transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1), transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
       overflow-y: auto;
     }
 
@@ -183,22 +172,19 @@
       transform: translateY(0) scale(1);
     }
 
-    /* Slide Header Hierarchy */
     .slide-badge {
       display: inline-flex;
       align-items: center;
       gap: 8px;
       font-size: 0.82rem;
-      font-weight: 700;
+      font-weight: 800;
       text-transform: uppercase;
       letter-spacing: 0.08em;
       color: var(--primary);
-      margin-bottom: 8px;
+      margin-bottom: 4px;
     }
-
     .slide-badge::before {
       content: "";
-      display: inline-block;
       width: 8px;
       height: 8px;
       border-radius: 50%;
@@ -206,24 +192,126 @@
     }
 
     h1.slide-title {
-      font-size: calc(2.4rem * var(--font-scale));
-      font-weight: 800;
-      line-height: 1.18;
-      color: var(--text-main);
+      font-size: calc(2.2rem * var(--font-scale));
+      font-weight: 900;
+      line-height: 1.15;
       letter-spacing: -0.03em;
-      margin-bottom: 8px;
+      margin-bottom: 6px;
     }
 
     p.slide-lead {
-      font-size: calc(1.15rem * var(--font-scale));
+      font-size: calc(1.1rem * var(--font-scale));
       color: var(--text-secondary);
-      line-height: 1.5;
-      max-width: 900px;
-      margin-bottom: 24px;
+      font-weight: 600;
+      line-height: 1.4;
+      margin-bottom: 20px;
     }
 
-    /* Content Layout Grids */
-    .grid-2 {
+    /* Visual Grid Layouts */
+    .visual-grid-hero {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 28px;
+      align-items: center;
+      flex: 1;
+    }
+
+    .visual-card {
+      position: relative;
+      background: #FFFFFF;
+      border: 1.5px solid var(--card-border);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .visual-card-img {
+      width: 100%;
+      height: 240px;
+      object-fit: cover;
+      display: block;
+      background: #F1F5F9;
+    }
+
+    .visual-card-body {
+      padding: 16px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .visual-card-title {
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: var(--text-main);
+    }
+
+    .visual-card-text {
+      font-size: 0.92rem;
+      color: var(--text-secondary);
+      font-weight: 500;
+      line-height: 1.4;
+    }
+
+    /* Timeline with Visual Story Cards */
+    .timeline-story-grid {
+      display: grid;
+      grid-template-columns: 0.9fr 1.1fr;
+      gap: 28px;
+      align-items: center;
+      flex: 1;
+    }
+
+    .story-timeline-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .story-node {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      background: #FFFFFF;
+      border: 1.5px solid var(--card-border);
+      border-radius: 14px;
+      padding: 12px 18px;
+      box-shadow: var(--shadow-sm);
+      transition: all 0.2s ease;
+    }
+
+    .story-node:hover {
+      border-color: var(--primary);
+      transform: translateX(4px);
+    }
+
+    .story-year-pill {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--primary);
+      background: var(--primary-light);
+      padding: 6px 12px;
+      border-radius: 8px;
+      flex-shrink: 0;
+    }
+
+    .story-node h4 {
+      font-size: 1.02rem;
+      font-weight: 800;
+      color: var(--text-main);
+    }
+
+    .story-node p {
+      font-size: 0.88rem;
+      color: var(--text-secondary);
+      margin-top: 2px;
+    }
+
+    /* Slide 3: Anatomy and Biomechanics */
+    .anatomy-flex-layout {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 28px;
@@ -231,336 +319,154 @@
       flex: 1;
     }
 
-    .grid-3 {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 20px;
-      align-items: stretch;
-      flex: 1;
-    }
-
-    /* Cards & Containers */
-    .feature-card {
-      background: #FFFFFF;
-      border: 1.5px solid var(--card-border);
+    .tactile-photo-box {
       border-radius: 16px;
-      padding: 24px 26px;
-      box-shadow: var(--shadow-sm);
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      position: relative;
-      transition: border-color 0.2s, box-shadow 0.2s;
-    }
-
-    .feature-card.highlight {
-      border-color: #93C5FD;
-      background: linear-gradient(180deg, #FFFFFF 0%, #F8FAFC 100%);
-    }
-
-    .feature-card .card-num {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 32px;
-      height: 32px;
-      border-radius: 10px;
-      background: var(--primary-light);
-      color: var(--primary);
-      font-weight: 800;
-      font-size: 0.95rem;
-    }
-
-    .feature-card h3 {
-      font-size: calc(1.2rem * var(--font-scale));
-      font-weight: 700;
-      color: var(--text-main);
-      line-height: 1.3;
-    }
-
-    .feature-card p {
-      font-size: calc(0.95rem * var(--font-scale));
-      color: var(--text-secondary);
-      line-height: 1.55;
-    }
-
-    /* Hero Slide 1 Elements */
-    .hero-layout {
-      display: grid;
-      grid-template-columns: 1.15fr 0.85fr;
-      gap: 40px;
-      align-items: center;
-      flex: 1;
-    }
-
-    .hero-facts {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
-      margin-top: 20px;
-    }
-
-    .fact-item {
-      background: var(--primary-light);
-      border: 1px solid rgba(29, 78, 216, 0.15);
-      border-radius: 12px;
-      padding: 14px 16px;
-    }
-
-    .fact-item .label {
-      font-size: 0.75rem;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: var(--primary);
-      font-weight: 700;
-    }
-
-    .fact-item .value {
-      font-size: 1.1rem;
-      font-weight: 800;
-      color: var(--text-main);
-      margin-top: 4px;
-    }
-
-    .hero-portrait-card {
-      position: relative;
-      background: #FFFFFF;
-      border: 1px solid var(--card-border);
-      border-radius: 20px;
-      padding: 16px;
+      overflow: hidden;
+      border: 1.5px solid var(--card-border);
       box-shadow: var(--shadow-md);
-      text-align: center;
+      position: relative;
     }
 
-    .hero-portrait-img {
+    .tactile-photo-box img {
       width: 100%;
       height: 290px;
       object-fit: cover;
-      object-position: center 20%;
-      border-radius: 14px;
       display: block;
-      background: #E2E8F0;
     }
 
-    .hero-portrait-caption {
-      margin-top: 12px;
+    .tactile-badge-overlay {
+      position: absolute;
+      bottom: 12px;
+      left: 12px;
+      right: 12px;
+      background: rgba(15, 23, 42, 0.88);
+      color: #FFFFFF;
+      padding: 10px 16px;
+      border-radius: 10px;
       font-size: 0.88rem;
-      color: var(--text-muted);
       font-weight: 600;
+      backdrop-filter: blur(8px);
     }
 
-    .hero-portrait-quote {
-      margin-top: 14px;
-      padding: 12px 16px;
-      background: #F1F5F9;
-      border-left: 4px solid var(--primary);
-      border-radius: 0 10px 10px 0;
-      font-style: italic;
-      color: var(--text-main);
-      font-weight: 600;
-      font-size: 0.95rem;
-      text-align: left;
-    }
-
-    /* Timeline on Slide 2 */
-    .timeline-container {
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-      margin-top: 8px;
-    }
-
-    .timeline-step {
-      display: grid;
-      grid-template-columns: 140px 1fr;
-      gap: 20px;
-      align-items: center;
-      background: #FFFFFF;
-      border: 1px solid var(--card-border);
-      border-radius: 14px;
-      padding: 16px 20px;
-      box-shadow: var(--shadow-sm);
-      transition: all 0.2s ease;
-    }
-
-    .timeline-step:hover {
-      border-color: var(--primary);
-      transform: translateX(4px);
-    }
-
-    .step-time {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-    }
-
-    .step-year {
-      font-size: 1.35rem;
-      font-weight: 800;
-      color: var(--primary);
-      font-family: 'JetBrains Mono', monospace;
-    }
-
-    .step-age {
-      font-size: 0.78rem;
-      font-weight: 700;
-      color: var(--text-muted);
-      text-transform: uppercase;
-    }
-
-    .step-body h4 {
-      font-size: 1.05rem;
-      font-weight: 700;
-      color: var(--text-main);
-      margin-bottom: 2px;
-    }
-
-    .step-body p {
-      font-size: 0.92rem;
-      color: var(--text-secondary);
-      line-height: 1.45;
-    }
-
-    /* Slide 3: Anatomy of Braille Cell & Engineering */
-    .cell-anatomy-box {
+    .anatomy-demo-box {
       background: #F8FAFC;
       border: 1.5px solid var(--card-border);
-      border-radius: 18px;
+      border-radius: 16px;
       padding: 24px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
       gap: 16px;
     }
 
     .braille-grid-display {
       display: grid;
-      grid-template-columns: repeat(2, 60px);
-      grid-template-rows: repeat(3, 60px);
+      grid-template-columns: repeat(2, 64px);
+      grid-template-rows: repeat(3, 64px);
       gap: 16px;
       background: #FFFFFF;
-      padding: 24px;
+      padding: 20px;
       border-radius: 16px;
       box-shadow: var(--shadow-md);
-      border: 2px dashed #CBD5E1;
-      position: relative;
+      border: 2px dashed #94A3B8;
     }
 
     .anatomy-dot {
-      width: 60px;
-      height: 60px;
+      width: 64px;
+      height: 64px;
       border-radius: 50%;
       background: #F1F5F9;
-      border: 2px solid #94A3B8;
+      border: 2px solid #64748B;
       display: flex;
       align-items: center;
       justify-content: center;
       font-weight: 800;
-      font-size: 1.15rem;
-      color: var(--text-secondary);
+      font-size: 1.3rem;
+      color: var(--text-main);
       font-family: 'JetBrains Mono', monospace;
-      position: relative;
-      transition: all 0.2s ease;
     }
 
     .anatomy-dot.highlight {
-      background: var(--primary);
+      background: var(--text-main);
       color: #FFFFFF;
-      border-color: var(--primary-hover);
-      box-shadow: 0 4px 12px rgba(29, 78, 216, 0.3);
+      border-color: var(--text-main);
+      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.35);
     }
 
-    .formula-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 12px;
-      padding: 10px 18px;
-      background: var(--warning-light);
-      border: 1px solid rgba(217, 119, 6, 0.3);
-      border-radius: 10px;
-      color: #92400E;
-      font-weight: 700;
-      font-size: 0.95rem;
-    }
-
-    /* Slide 4: Respectful Etiquette */
-    .etiquette-grid {
+    /* Slide 4: Visual Etiquette Comparison */
+    .etiquette-visual-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 24px;
-      margin-top: 8px;
+      flex: 1;
     }
 
     .etiq-card {
       border-radius: 16px;
-      padding: 24px 28px;
+      padding: 20px 24px;
       display: flex;
       flex-direction: column;
-      gap: 16px;
+      gap: 14px;
     }
-
     .etiq-card.myth {
       background: var(--danger-light);
-      border: 1.5px solid rgba(220, 38, 38, 0.25);
+      border: 1.5px solid rgba(220, 38, 38, 0.3);
     }
-
     .etiq-card.truth {
       background: var(--success-light);
-      border: 1.5px solid rgba(5, 150, 105, 0.25);
+      border: 1.5px solid rgba(5, 150, 105, 0.3);
     }
 
     .etiq-card h3 {
+      font-size: 1.15rem;
+      font-weight: 800;
       display: flex;
       align-items: center;
-      gap: 10px;
-      font-size: 1.2rem;
-      font-weight: 800;
+      gap: 8px;
     }
+    .myth h3 { color: var(--danger); }
+    .truth h3 { color: var(--success); }
 
-    .etiq-card.myth h3 { color: var(--danger); }
-    .etiq-card.truth h3 { color: var(--success); }
-
-    .etiq-list {
-      list-style: none;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .etiq-list li {
-      font-size: 0.98rem;
-      line-height: 1.45;
-      color: var(--text-main);
+    .etiq-item {
       display: flex;
       align-items: flex-start;
-      gap: 10px;
+      gap: 12px;
+      background: #FFFFFF;
+      padding: 12px 14px;
+      border-radius: 12px;
+      box-shadow: var(--shadow-sm);
     }
 
-    .etiq-list li strong {
-      font-weight: 700;
-    }
-
-    .pill-icon {
-      flex-shrink: 0;
-      width: 22px;
-      height: 22px;
+    .etiq-badge-icon {
+      width: 28px;
+      height: 28px;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 0.8rem;
       font-weight: 800;
-      margin-top: 2px;
+      font-size: 0.9rem;
+      flex-shrink: 0;
     }
-    .myth .pill-icon { background: #FCA5A5; color: #7F1D1D; }
-    .truth .pill-icon { background: #6EE7B7; color: #064E3B; }
+    .myth .etiq-badge-icon { background: #FEE2E2; color: #DC2626; }
+    .truth .etiq-badge-icon { background: #D1FAE5; color: #059669; }
 
-    /* Slide 5: Interactive Builder */
+    .etiq-item strong {
+      display: block;
+      font-size: 0.95rem;
+      color: var(--text-main);
+      margin-bottom: 2px;
+    }
+    .etiq-item span {
+      font-size: 0.86rem;
+      color: var(--text-secondary);
+    }
+
+    /* Interactive Builder */
     .builder-container {
       display: grid;
-      grid-template-columns: 1fr 1.15fr;
-      gap: 36px;
+      grid-template-columns: 1fr 1.2fr;
+      gap: 32px;
       align-items: center;
       flex: 1;
     }
@@ -577,28 +483,28 @@
     }
 
     .target-letter-badge {
-      font-size: 3rem;
+      font-size: 3.2rem;
       font-weight: 900;
       color: var(--primary);
       line-height: 1;
-      margin-bottom: 8px;
+      margin: 8px 0;
     }
 
     .target-braille-small {
       display: grid;
-      grid-template-columns: repeat(2, 28px);
-      grid-template-rows: repeat(3, 28px);
-      gap: 8px;
+      grid-template-columns: repeat(2, 30px);
+      grid-template-rows: repeat(3, 30px);
+      gap: 10px;
       background: #FFFFFF;
       padding: 16px;
-      border-radius: 12px;
+      border-radius: 14px;
       border: 1px solid var(--card-border);
       margin: 12px 0;
     }
 
     .target-dot-sm {
-      width: 28px;
-      height: 28px;
+      width: 30px;
+      height: 30px;
       border-radius: 50%;
       background: #E2E8F0;
     }
@@ -612,12 +518,12 @@
       background: #FFFFFF;
       border: 2px solid var(--primary);
       border-radius: 20px;
-      padding: 28px;
+      padding: 26px;
       box-shadow: var(--shadow-md);
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 20px;
+      gap: 18px;
     }
 
     .clickable-cell {
@@ -663,64 +569,21 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 10px;
-      padding: 12px 28px;
+      gap: 8px;
+      padding: 12px 26px;
       border-radius: 12px;
       background: var(--primary);
       color: #FFFFFF;
       border: none;
-      font-weight: 700;
+      font-weight: 800;
       font-size: 1rem;
       cursor: pointer;
       transition: all 0.2s ease;
       box-shadow: 0 4px 12px rgba(29, 78, 216, 0.25);
     }
-
     .btn-action:hover {
       background: var(--primary-hover);
       transform: translateY(-2px);
-      box-shadow: 0 6px 16px rgba(29, 78, 216, 0.35);
-    }
-
-    /* Slide 6: Real-Time Translator */
-    .translator-wrapper {
-      display: flex;
-      flex-direction: column;
-      gap: 22px;
-      flex: 1;
-    }
-
-    .input-control-box {
-      display: flex;
-      gap: 14px;
-      align-items: center;
-    }
-
-    .input-control-box input {
-      flex: 1;
-      padding: 14px 22px;
-      border: 2px solid var(--card-border);
-      border-radius: 14px;
-      font-size: 1.35rem;
-      font-weight: 700;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      color: var(--text-main);
-      background: #FFFFFF;
-      outline: none;
-      transition: border-color 0.2s, box-shadow 0.2s;
-    }
-
-    .input-control-box input:focus {
-      border-color: var(--primary);
-      box-shadow: 0 0 0 4px rgba(29, 78, 216, 0.12);
-    }
-
-    .quick-tags {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      flex-wrap: wrap;
     }
 
     .quick-tag-btn {
@@ -729,7 +592,7 @@
       background: #F1F5F9;
       border: 1px solid var(--card-border);
       color: var(--text-secondary);
-      font-weight: 600;
+      font-weight: 700;
       font-size: 0.85rem;
       cursor: pointer;
       transition: all 0.15s ease;
@@ -740,16 +603,48 @@
       border-color: var(--primary);
     }
 
+    /* Translator */
+    .translator-wrapper {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      flex: 1;
+    }
+
+    .input-control-box {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .input-control-box input {
+      flex: 1;
+      padding: 12px 20px;
+      border: 2px solid var(--card-border);
+      border-radius: 12px;
+      font-size: 1.3rem;
+      font-weight: 800;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--text-main);
+      background: #FFFFFF;
+      outline: none;
+    }
+    .input-control-box input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(29, 78, 216, 0.12);
+    }
+
     .tactile-tape {
       background: #FFFFFF;
       border: 1.5px solid var(--card-border);
       border-radius: 18px;
-      padding: 30px;
-      min-height: 200px;
+      padding: 24px;
+      min-height: 190px;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 16px;
+      gap: 14px;
       flex-wrap: wrap;
       box-shadow: inset 0 2px 6px rgba(15, 23, 42, 0.03);
     }
@@ -758,11 +653,11 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
       background: #F8FAFC;
-      border: 1px solid var(--card-border);
+      border: 1.5px solid var(--card-border);
       border-radius: 12px;
-      padding: 12px 14px;
+      padding: 10px 12px;
     }
 
     .cipher-grid {
@@ -785,16 +680,16 @@
     }
 
     .cipher-char {
-      font-size: 1.15rem;
-      font-weight: 800;
+      font-size: 1.2rem;
+      font-weight: 900;
       color: var(--primary);
     }
 
-    /* Slide 7: Quiz Arena */
+    /* Quiz */
     .quiz-container {
       display: flex;
       flex-direction: column;
-      gap: 20px;
+      gap: 18px;
       flex: 1;
     }
 
@@ -826,12 +721,13 @@
       background: var(--primary);
       color: #FFFFFF;
       font-size: 0.95rem;
+      font-weight: 800;
     }
 
     .quiz-options-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 14px;
+      gap: 12px;
     }
 
     .quiz-btn {
@@ -875,7 +771,7 @@
       background: #E2E8F0;
       border-radius: 999px;
       overflow: hidden;
-      margin-top: 10px;
+      margin-top: 14px;
     }
 
     .quiz-progress-fill {
@@ -885,33 +781,61 @@
       transition: width 0.3s ease;
     }
 
-    /* Optional Warm-up Modal (Slide 8 optional toggle) */
-    .warmup-box {
-      background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%);
-      border: 1.5px solid #BFDBFE;
-      border-radius: 18px;
-      padding: 24px 28px;
-      margin-top: 10px;
-    }
-
-    .warmup-steps {
+    /* Modern Slide 8: Life Impact Visual Grid */
+    .impact-visual-grid {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 18px;
-      margin-top: 14px;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 28px;
+      align-items: center;
+      flex: 1;
     }
 
-    .warmup-step-item {
+    .impact-badges-column {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .impact-badge-card {
+      display: flex;
+      align-items: center;
+      gap: 16px;
       background: #FFFFFF;
-      padding: 16px 20px;
-      border-radius: 12px;
-      border: 1px solid #BFDBFE;
+      border: 1.5px solid var(--card-border);
+      border-radius: 14px;
+      padding: 14px 18px;
+      box-shadow: var(--shadow-sm);
     }
 
-    /* Navigation Dock (Bottom) */
+    .impact-badge-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: var(--primary-light);
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      flex-shrink: 0;
+    }
+
+    .impact-badge-card h4 {
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: var(--text-main);
+    }
+
+    .impact-badge-card p {
+      font-size: 0.88rem;
+      color: var(--text-secondary);
+      margin-top: 2px;
+    }
+
+    /* Navigation Dock */
     footer.dock {
       position: fixed;
-      bottom: 14px;
+      bottom: 12px;
       left: 50%;
       transform: translateX(-50%);
       z-index: 100;
@@ -921,7 +845,7 @@
       background: rgba(255, 255, 255, 0.95);
       backdrop-filter: blur(14px);
       border: 1px solid var(--card-border);
-      box-shadow: 0 12px 30px rgba(15, 23, 42, 0.12);
+      box-shadow: 0 10px 25px rgba(15, 23, 42, 0.12);
       padding: 8px 18px;
       border-radius: 999px;
     }
@@ -941,16 +865,11 @@
       font-weight: 700;
       transition: all 0.15s ease;
     }
-
     .dock-btn:hover {
       background: var(--primary-light);
       color: var(--primary);
       border-color: var(--primary);
       transform: scale(1.06);
-    }
-
-    .dock-btn:active {
-      transform: scale(0.94);
     }
 
     .indicators-group {
@@ -967,11 +886,6 @@
       cursor: pointer;
       transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
     }
-
-    .indicator-pill:hover {
-      background: #94A3B8;
-    }
-
     .indicator-pill.active {
       width: 34px;
       background: var(--primary);
@@ -981,12 +895,11 @@
     .dock-counter {
       font-family: 'JetBrains Mono', monospace;
       font-size: 0.85rem;
-      font-weight: 700;
+      font-weight: 800;
       color: var(--text-secondary);
       padding: 0 6px;
     }
 
-    /* Confetti Particle */
     .confetti-dot {
       position: fixed;
       width: 8px;
@@ -996,21 +909,32 @@
       z-index: 1000;
     }
 
-    /* Responsive scaling for laptops & standard projectors */
     @media (max-height: 740px) {
       .slide {
-        padding: 24px 36px;
+        padding: 20px 32px;
       }
       h1.slide-title {
-        font-size: 1.85rem;
-        margin-bottom: 4px;
+        font-size: 1.8rem;
       }
       p.slide-lead {
         font-size: 0.95rem;
         margin-bottom: 12px;
       }
-      .hero-portrait-img {
-        height: 200px;
+      .visual-card-img {
+        height: 180px;
+      }
+      .tactile-photo-box img {
+        height: 220px;
+      }
+      .braille-grid-display {
+        grid-template-columns: repeat(2, 48px);
+        grid-template-rows: repeat(3, 48px);
+        gap: 10px;
+        padding: 14px;
+      }
+      .anatomy-dot {
+        width: 48px;
+        height: 48px;
       }
       .clickable-cell {
         gap: 10px;
@@ -1018,16 +942,6 @@
       .interactive-dot-btn {
         width: 52px;
         height: 52px;
-      }
-      .braille-grid-display {
-        grid-template-columns: repeat(2, 48px);
-        grid-template-rows: repeat(3, 48px);
-        gap: 10px;
-        padding: 16px;
-      }
-      .anatomy-dot {
-        width: 48px;
-        height: 48px;
       }
     }
   </style>
@@ -1044,10 +958,10 @@
     </div>
 
     <div class="top-controls">
-      <button class="btn-toggle-mode" id="btnModeProjector" onclick="toggleProjectorMode()" title="Максимальный контраст для проектора в освещенном классе">
+      <button class="btn-toggle-mode" id="btnModeProjector" onclick="toggleProjectorMode()" title="Повышенный контраст для проектора (Клавиша P)">
         <span>📽️ Режим проектора</span>
       </button>
-      <button class="btn-toggle-mode" id="btnFullscreen" onclick="toggleFullscreen()" title="Полноэкранный показ (клавиша F)">
+      <button class="btn-toggle-mode" id="btnFullscreen" onclick="toggleFullscreen()" title="На весь экран (Клавиша F)">
         <span>⛶ На весь экран</span>
       </button>
     </div>
@@ -1056,104 +970,118 @@
   <!-- Slide Stage -->
   <main class="stage">
 
-    <!-- SLIDE 1: Титульный инженерный слайд -->
+    <!-- SLIDE 1: Титул с крупным визуалом -->
     <section class="slide active" id="slide-0">
-      <div class="slide-badge">Урок-исследование • Человек и технологии</div>
+      <div class="slide-badge">Урок-открытие • 4 класс</div>
       <h1 class="slide-title">Код Брайля: Наука чтения кончиками пальцев</h1>
-      <p class="slide-lead">История о том, как 15-летний французский подросток решил инженерную задачу, изменившую жизнь миллионов людей во всём мире.</p>
+      <p class="slide-lead">Как 15-летний школьник решил задачу, над которой столетиями ломали голову величайшие учёные.</p>
 
-      <div class="hero-layout">
-        <div>
-          <div class="feature-card highlight">
-            <h3>Проблема, которую не могли решить веками</h3>
-            <p>До изобретения Брайля слепые люди пытались читать гигантские книги с выдавленными обычными буквами. Одна страница весила как кирпич, а на чтение одного предложения уходило несколько минут. Читать было мучительно трудно, а писать самим — невозможно.</p>
-          </div>
-
-          <div class="hero-facts">
-            <div class="fact-item">
-              <div class="label">Год рождения</div>
-              <div class="value">1809</div>
-            </div>
-            <div class="fact-item">
-              <div class="label">Возраст прорыва</div>
-              <div class="value">15 лет</div>
-            </div>
-            <div class="fact-item">
-              <div class="label">Элементов кода</div>
-              <div class="value">6 точек</div>
-            </div>
+      <div class="visual-grid-hero">
+        <div class="visual-card" style="box-shadow:var(--shadow-md);">
+          <img src="images/braille_finger_reading.jpg" alt="Чтение рельефного шрифта пальцами" class="visual-card-img" style="height:280px;">
+          <div class="visual-card-body">
+            <div class="visual-card-title">Чтение на кончиках пальцев</div>
+            <div class="visual-card-text">Вместо глаз — подушечка пальца. Вместо чернил — выпуклые рельефные точки.</div>
           </div>
         </div>
 
-        <div class="hero-portrait-card">
-          <img src="louis-braille-portrait-photo-2.jpg" alt="Портрет Луи Брайля" class="hero-portrait-img">
-          <div class="hero-portrait-caption">Луи Брайль (1809–1852) — педагог, изобретатель, музыкант</div>
-          <div class="hero-portrait-quote">«Если мои глаза не видят мир, я научу свои пальцы понимать его.»</div>
+        <div style="display:flex; flex-direction:column; gap:16px;">
+          <div class="visual-card" style="border-left: 5px solid var(--primary);">
+            <div class="visual-card-body">
+              <div style="font-size:0.8rem; font-weight:800; color:var(--primary); text-transform:uppercase;">Герой истории</div>
+              <div class="visual-card-title">Луи Брайль (1809–1852)</div>
+              <div class="visual-card-text">Мальчик из Франции, который ослеп в детстве, но подарил книги миллионам людей.</div>
+            </div>
+          </div>
+
+          <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:10px;">
+            <div style="background:var(--primary-light); padding:12px; border-radius:12px; text-align:center; border:1px solid #BFDBFE;">
+              <div style="font-size:0.72rem; font-weight:800; color:var(--primary);">ГОД</div>
+              <div style="font-size:1.3rem; font-weight:900; color:var(--text-main);">1809</div>
+            </div>
+            <div style="background:var(--primary-light); padding:12px; border-radius:12px; text-align:center; border:1px solid #BFDBFE;">
+              <div style="font-size:0.72rem; font-weight:800; color:var(--primary);">ВОЗРАСТ</div>
+              <div style="font-size:1.3rem; font-weight:900; color:var(--text-main);">15 лет</div>
+            </div>
+            <div style="background:var(--primary-light); padding:12px; border-radius:12px; text-align:center; border:1px solid #BFDBFE;">
+              <div style="font-size:0.72rem; font-weight:800; color:var(--primary);">ОСНОВА</div>
+              <div style="font-size:1.3rem; font-weight:900; color:var(--text-main);">6 точек</div>
+            </div>
+          </div>
         </div>
       </div>
     </section>
 
-    <!-- SLIDE 2: Хроника изобретения -->
+    <!-- SLIDE 2: Хроника с картиной изобретения -->
     <section class="slide" id="slide-1">
-      <div class="slide-badge">Хроника событий</div>
-      <h1 class="slide-title">Путь изобретателя: От мастерской до Пантеона</h1>
-      <p class="slide-lead">Луи не родился учёным — он был обычным любознательным мальчиком, столкнувшимся с тяжёлым испытанием.</p>
+      <div class="slide-badge">История изобретения</div>
+      <h1 class="slide-title">Как рождался алфавит: Шаги открытия</h1>
+      <p class="slide-lead">Луи был подростком, когда создал технологию, опередившую своё время.</p>
 
-      <div class="timeline-container">
-        <div class="timeline-step">
-          <div class="step-time">
-            <span class="step-year">1809–1812</span>
-            <span class="step-age">0 — 3 года</span>
-          </div>
-          <div class="step-body">
-            <h4>Детство в Кувре и роковая случайность</h4>
-            <p>Отец Луи был шорником (шил конскую упряжь). Играя в мастерской с острым шилом, 3-летний Луи случайно поранил глаз. Началось воспаление, и к 5 годам мальчик полностью ослеп.</p>
+      <div class="timeline-story-grid">
+        <div class="visual-card" style="box-shadow:var(--shadow-md);">
+          <img src="images/braille_workshop_invention.jpg" alt="15-летний Луи Брайль создаёт шрифт" class="visual-card-img" style="height:310px;">
+          <div class="visual-card-body">
+            <div class="visual-card-title">Париж, 1824 год</div>
+            <div class="visual-card-text">Луи прокалывает плотную бумагу грифелем, создавая первые буквы своего 6-точечного шифра.</div>
           </div>
         </div>
 
-        <div class="timeline-step">
-          <div class="step-time">
-            <span class="step-year">1819</span>
-            <span class="step-age">10 лет</span>
+        <div class="story-timeline-list">
+          <div class="story-node">
+            <span class="story-year-pill">1809</span>
+            <div>
+              <h4>Рождение в Кувре</h4>
+              <p>Мастерская отца-шорника и детская травма глаза шилом в 3 года.</p>
+            </div>
           </div>
-          <div class="step-body">
-            <h4>Королевский институт для слепых детей в Париже</h4>
-            <p>Луи выигрывает стипендию. В школе всего 14 громоздких рельефных книг на всю библиотеку. Луи мечтает свободно читать историю, науку и ноты.</p>
-          </div>
-        </div>
 
-        <div class="timeline-step">
-          <div class="step-time">
-            <span class="step-year">1821</span>
-            <span class="step-age">12 лет</span>
+          <div class="story-node">
+            <span class="story-year-pill">1819</span>
+            <div>
+              <h4>Институт для слепых детей</h4>
+              <p>10-летний Луи переезжает в Париж. В школьной библиотеке всего 14 тяжёлых книг.</p>
+            </div>
           </div>
-          <div class="step-body">
-            <h4>Встреча с «ночной азбукой» капитана Барбье</h4>
-            <p>В школу приезжает офицер Шарль Барбье. Он создал шифр из 12 выпуклых точек, чтобы солдаты читали донесения в темноте без огня. Система была слишком сложной, но Луи ухватился за эту идею!</p>
-          </div>
-        </div>
 
-        <div class="timeline-step">
-          <div class="step-time">
-            <span class="step-year">1824</span>
-            <span class="step-age">15 лет</span>
+          <div class="story-node">
+            <span class="story-year-pill">1821</span>
+            <div>
+              <h4>Шифр капитана Барбье</h4>
+              <p>Военный код из 12 точек для чтения приказов ночью без света. Слишком сложный, но дал толчок идее!</p>
+            </div>
           </div>
-          <div class="step-body">
-            <h4>Рождение 6-точечной системы Брайля</h4>
-            <p>Луи сократил ячейку ровно до 6 точек. Теперь символ целиком помещался под подушечку пальца. Слепые люди впервые смогли не только быстро читать, но и писать прибором и грифелем.</p>
+
+          <div class="story-node" style="border-color:var(--primary); background:#F8FAFC;">
+            <span class="story-year-pill" style="background:var(--primary); color:#FFF;">1824</span>
+            <div>
+              <h4>Триумф: 6 точек!</h4>
+              <p>В 15 лет Луи создаёт универсальный рельефный код, удобный для пальцев.</p>
+            </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- SLIDE 3: Инженерная тайна: Почему именно 6 точек? -->
+    <!-- SLIDE 3: Почему 6 точек? Сравнение фото и матрицы -->
     <section class="slide" id="slide-2">
-      <div class="slide-badge">Биомеханика и криптография</div>
-      <h1 class="slide-title">Инженерный секрет: Почему именно 6 точек?</h1>
-      <p class="slide-lead">Военный шифр из 12 точек провалился, а 6 точек Брайля покорили мир. В чём был научный расчёт подростка?</p>
+      <div class="slide-badge">Биомеханика пальца</div>
+      <h1 class="slide-title">Почему ровно 6 точек? Секрет осязания</h1>
+      <p class="slide-lead">Военный шифр из 12 точек не прижился. Почему 6 точек стали идеальным решением?</p>
 
-      <div class="grid-2">
-        <div class="cell-anatomy-box">
+      <div class="anatomy-flex-layout">
+        <div class="tactile-photo-box">
+          <img src="images/braille_finger_reading.jpg" alt="Подушечка пальца на шрифте Брайля">
+          <div class="tactile-badge-overlay">
+            🔍 <strong>Закон биологии:</strong> Подушечка указательного пальца человека мгновенно охватывает ровно 6 точек за 1 касание, не двигаясь вверх и вниз!
+          </div>
+        </div>
+
+        <div class="anatomy-demo-box">
+          <div style="font-size:0.95rem; font-weight:800; color:var(--text-main);">
+            Матрица ячейки Брайля: 2 столбика по 3 точки
+          </div>
+
           <div class="braille-grid-display">
             <div class="anatomy-dot highlight">1</div>
             <div class="anatomy-dot">4</div>
@@ -1162,178 +1090,167 @@
             <div class="anatomy-dot">3</div>
             <div class="anatomy-dot">6</div>
           </div>
-          <div class="formula-badge">
-            <span>📐 Математика кода:</span>
-            <span>2⁶ = 64 уникальные комбинации!</span>
-          </div>
-          <div style="font-size:0.85rem; color:var(--text-muted); text-align:center;">
-            Буквы алфавита, цифры, знаки препинания и даже нотные знаки для музыки.
-          </div>
-        </div>
 
-        <div style="display:flex; flex-direction:column; gap:16px;">
-          <div class="feature-card">
-            <div class="card-num">1</div>
-            <h3>Подушечка пальца человека</h3>
-            <p>Биология доказала: человек способен мгновенно распознать осязанием матрицу размером не более 6 точек без перемещения пальца. 12 точек Барбье требовали ощупывания сверху вниз, и мозг терял скорость восприятия.</p>
-          </div>
-
-          <div class="feature-card">
-            <div class="card-num">2</div>
-            <h3>Логичная нумерация</h3>
-            <p>Точки считаются сверху вниз: левый столбик — <strong>1, 2, 3</strong>; правый столбик — <strong>4, 5, 6</strong>. Например, буква <strong>«Б»</strong> — это точки 1 и 2.</p>
-          </div>
-
-          <div class="feature-card">
-            <div class="card-num">3</div>
-            <h3>Универсальность для всех языков</h3>
-            <p>Система оказалась настолько элегантной, что на неё переложили русский, английский, китайский языки, химические формулы и шахматные партии.</p>
+          <div style="display:flex; gap:12px; width:100%;">
+            <div style="flex:1; background:#FFFFFF; border:1px solid var(--card-border); border-radius:12px; padding:12px; text-align:center;">
+              <div style="font-size:1.4rem; font-weight:900; color:var(--primary);">64</div>
+              <div style="font-size:0.75rem; font-weight:700; color:var(--text-muted); text-transform:uppercase;">комбинации (2⁶)</div>
+            </div>
+            <div style="flex:1; background:#FFFFFF; border:1px solid var(--card-border); border-radius:12px; padding:12px; text-align:center;">
+              <div style="font-size:1.4rem; font-weight:900; color:var(--success);">0.2 сек</div>
+              <div style="font-size:0.75rem; font-weight:700; color:var(--text-muted); text-transform:uppercase;">скорость распознавания</div>
+            </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- SLIDE 4: Культура общения и этика -->
+    <!-- SLIDE 4: Этикет общения с фото-иллюстрацией -->
     <section class="slide" id="slide-3">
-      <div class="slide-badge">Социальный интеллект • Этикет</div>
-      <h1 class="slide-title">Как общаться с незрячим человеком: Без мифов и жалости</h1>
-      <p class="slide-lead">Незрячие люди живут полной жизнью, учатся, работают программистами, переводчиками и музыкантами. Главное правило — уважение и естественность.</p>
+      <div class="slide-badge">Социальный этикет</div>
+      <h1 class="slide-title">Как общаться с незрячим: Главные правила</h1>
+      <p class="slide-lead">Незрячие люди — такие же, как мы. Важны уважение, вежливость и никакого страха.</p>
 
-      <div class="etiquette-grid">
+      <div class="etiquette-visual-grid">
         <div class="etiq-card myth">
           <h3>
-            <span class="pill-icon">✕</span>
-            <span>Как делать НЕ нужно (Частые ошибки)</span>
+            <span>🚫</span>
+            <span>Как делать НЕ нужно</span>
           </h3>
-          <ul class="etiq-list">
-            <li>
-              <span class="pill-icon">✕</span>
-              <div><strong>Не хватай внезапно за руку или трость.</strong> Это пугает и сбивает ориентир в пространстве.</div>
-            </li>
-            <li>
-              <span class="pill-icon">✕</span>
-              <div><strong>Не проявляй чрезмерную жалость.</strong> Не нужно причитать: «Ой, бедный, какое горе». Относись как к обычному человеку.</div>
-            </li>
-            <li>
-              <span class="pill-icon">✕</span>
-              <div><strong>Не бойся обычных слов «посмотри» или «увидимся».</strong> Незрячие спокойно используют их в своей речи каждый день.</div>
-            </li>
-            <li>
-              <span class="pill-icon">✕</span>
-              <div><strong>Не гладь собаку-поводыря на службе.</strong> Собака в специальной шлейке работает и отвечает за безопасность хозяина.</div>
-            </li>
-          </ul>
+          <div class="etiq-item">
+            <div class="etiq-badge-icon">✕</div>
+            <div>
+              <strong>Не хватай внезапно за руку или белую трость</strong>
+              <span>Это пугает и лишает человека ориентации в пространстве.</span>
+            </div>
+          </div>
+          <div class="etiq-item">
+            <div class="etiq-badge-icon">✕</div>
+            <div>
+              <strong>Не проявляй притворной жалости («Ой, бедный…»)</strong>
+              <span>Незрячие люди самостоятельны, работают, учатся и путешествуют.</span>
+            </div>
+          </div>
+          <div class="etiq-item">
+            <div class="etiq-badge-icon">✕</div>
+            <div>
+              <strong>Не отвлекай и не гладь собаку-поводыря на службе</strong>
+              <span>Она в специальной шлейке и отвечает за безопасность хозяина.</span>
+            </div>
+          </div>
         </div>
 
         <div class="etiq-card truth">
           <h3>
-            <span class="pill-icon">✓</span>
-            <span>Золотые правила уважительного общения</span>
+            <span>✅</span>
+            <span>Золотые правила дружбы</span>
           </h3>
-          <ul class="etiq-list">
-            <li>
-              <span class="pill-icon">✓</span>
-              <div><strong>Назови себя голосом при встрече.</strong> «Привет, я Денис из 4-го "Б"». Человек узнает, кто рядом.</div>
-            </li>
-            <li>
-              <span class="pill-icon">✓</span>
-              <div><strong>Всегда спроси, нужна ли помощь.</strong> «Вам помочь перейти улицу?» И только если человек согласился — предложи локоть.</div>
-            </li>
-            <li>
-              <span class="pill-icon">✓</span>
-              <div><strong>Предупреждай, если уходишь.</strong> Не оставляй человека разговаривающим в пустоту. Просто скажи: «Я отойду на минутку».</div>
-            </li>
-            <li>
-              <span class="pill-icon">✓</span>
-              <div><strong>Описывай направление словами.</strong> Вместо «Вон там!» скажи: «Справа от вас в двух шагах дверь».</div>
-            </li>
-          </ul>
+          <div class="etiq-item">
+            <div class="etiq-badge-icon">✓</div>
+            <div>
+              <strong>Назови себя по имени при встрече</strong>
+              <span>«Привет, я Данил из 4-го класса!» — человеку сразу понятно, кто рядом.</span>
+            </div>
+          </div>
+          <div class="etiq-item">
+            <div class="etiq-badge-icon">✓</div>
+            <div>
+              <strong>Всегда спроси: «Вам помочь?»</strong>
+              <span>И если человек согласен — просто предложи свой локоть.</span>
+            </div>
+          </div>
+          <div class="etiq-item">
+            <div class="etiq-badge-icon">✓</div>
+            <div>
+              <strong>Спокойно говори слова «посмотри» и «увидимся»</strong>
+              <span>Незрячие люди используют эти слова так же, как и все остальные.</span>
+            </div>
+          </div>
         </div>
       </div>
     </section>
 
-    <!-- SLIDE 5: Практикум «Собери символ» -->
+    <!-- SLIDE 5: Практикум «Собери букву» -->
     <section class="slide" id="slide-4">
-      <div class="slide-badge">Интерактивная лаборатория</div>
+      <div class="slide-badge">Интерактивная доска</div>
       <h1 class="slide-title">Практикум: Собери букву шрифта Брайля</h1>
-      <p class="slide-lead">Попробуй себя в роли наборщика книг. Посмотри на образец и собери верную комбинацию точек.</p>
+      <p class="slide-lead">Посмотри на образец слева и включи верные рельефные точки справа.</p>
 
       <div class="builder-container">
         <div class="target-preview-panel">
-          <div style="font-size:0.85rem; font-weight:700; color:var(--text-muted); text-transform:uppercase;">Задание: Собери букву</div>
+          <div style="font-size:0.85rem; font-weight:800; color:var(--text-muted); text-transform:uppercase;">Образец буквы:</div>
           <div class="target-letter-badge" id="buildTargetLetter">А</div>
-          <div style="font-size:0.9rem; color:var(--text-secondary); margin-bottom:6px;" id="buildTargetDesc">Точка 1 (верхняя левая)</div>
+          <div style="font-size:0.9rem; font-weight:700; color:var(--text-secondary); margin-bottom:6px;" id="buildTargetDesc">Точка 1 (верхняя левая)</div>
           
           <div class="target-braille-small" id="buildTargetVisual">
-            <!-- Dynamic target dots -->
+            <!-- Dynamic dots -->
           </div>
 
-          <div style="font-weight:700; color:var(--text-muted); font-size:0.9rem;" id="buildProgressCounter">Буква 1 из 5</div>
+          <div style="font-weight:800; color:var(--text-muted); font-size:0.9rem;" id="buildProgressCounter">Буква 1 из 5</div>
         </div>
 
         <div class="interactive-board">
           <div style="font-weight:700; font-size:1rem; color:var(--text-secondary);">
-            Нажимай на точки, чтобы включить нужные рельефные бугорки:
+            Нажимай на точки (1–6):
           </div>
 
           <div class="clickable-cell" id="userClickCell">
-            <!-- 6 buttons 1-6 -->
+            <!-- 6 buttons -->
           </div>
 
           <div style="display:flex; gap:12px; align-items:center;">
             <button class="btn-action" onclick="verifyLetterBuild()">
               <span>Проверить комбинацию ✓</span>
             </button>
-            <button class="quick-tag-btn" onclick="resetCurrentCell()">Сбросить точки</button>
+            <button class="quick-tag-btn" onclick="resetCurrentCell()">Сбросить</button>
           </div>
 
-          <div id="buildFeedbackText" style="min-height:24px; font-weight:700; font-size:1rem; color:var(--primary);">
-            Собери шаблон слева и нажми «Проверить»
+          <div id="buildFeedbackText" style="min-height:24px; font-weight:800; font-size:1rem; color:var(--primary);">
+            Собери комбинацию и нажми «Проверить»
           </div>
         </div>
       </div>
     </section>
 
-    <!-- SLIDE 6: Интерактивный транслятор в реальном времени -->
+    <!-- SLIDE 6: Живой тактильный декодер -->
     <section class="slide" id="slide-5">
-      <div class="slide-badge">Живой тактильный декодер</div>
-      <h1 class="slide-title">Тактильный декодер: Преврати любое слово в шрифт Брайля</h1>
-      <p class="slide-lead">Напечатай слово или имя — и система мгновенно закодирует его в матрицу рельефных точек по официальному ГОСТу русского шрифта Брайля.</p>
+      <div class="slide-badge">Живой декодер слов</div>
+      <h1 class="slide-title">Тактильный декодер: Любое слово шрифтом Брайля</h1>
+      <p class="slide-lead">Введи имя или выбери карточку — слово сразу закодируется в рельефные точки по ГОСТу.</p>
 
       <div class="translator-wrapper">
         <div class="input-control-box">
-          <input type="text" id="liveTranslatorInput" placeholder="ВВЕДИ СЛОВО (НАПРИМЕР: КЛАСС, ДРУЖБА, КНИГА)" maxlength="16" value="КНИГА" autocomplete="off">
+          <input type="text" id="liveTranslatorInput" placeholder="ВВЕДИ СЛОВО..." maxlength="14" value="КНИГА" autocomplete="off">
           <button class="btn-action" onclick="renderLiveTranslation()">
             <span>Закодировать ⤳</span>
           </button>
         </div>
 
-        <div class="quick-tags">
-          <span style="font-size:0.85rem; font-weight:700; color:var(--text-muted);">Быстрый выбор для класса:</span>
+        <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+          <span style="font-size:0.85rem; font-weight:800; color:var(--text-muted);">Быстрый выбор:</span>
           <button class="quick-tag-btn" onclick="setQuickWord('ЛУИ')">ЛУИ</button>
           <button class="quick-tag-btn" onclick="setQuickWord('ШКОЛА')">ШКОЛА</button>
           <button class="quick-tag-btn" onclick="setQuickWord('ПАРИЖ')">ПАРИЖ</button>
           <button class="quick-tag-btn" onclick="setQuickWord('ДРУГ')">ДРУГ</button>
-          <button class="quick-tag-btn" onclick="setQuickWord('ЗНАНИЕ')">ЗНАНИЕ</button>
           <button class="quick-tag-btn" onclick="setQuickWord('РОССИЯ')">РОССИЯ</button>
         </div>
 
         <div class="tactile-tape" id="tactileTapeResult">
-          <!-- Real-time braille cells -->
+          <!-- Live Braille Cells -->
         </div>
 
-        <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.88rem; color:var(--text-muted);">
+        <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.88rem; color:var(--text-muted); font-weight:600;">
           <span id="translatorStatus">Слово «КНИГА» — 5 букв Брайля</span>
-          <span>Каждая буква считывается подушечкой указательного пальца слева направо</span>
+          <span>Чтение ведётся подушечкой указательного пальца слева направо</span>
         </div>
       </div>
     </section>
 
-    <!-- SLIDE 7: Интеллектуальный командный квиз -->
+    <!-- SLIDE 7: Командный квиз -->
     <section class="slide" id="slide-6">
-      <div class="slide-badge">Проверка знаний • Блиц-опрос</div>
+      <div class="slide-badge">Блиц-опрос класса</div>
       <h1 class="slide-title">Инженерный квиз: Битва эрудитов 4 класса</h1>
-      <p class="slide-lead">Проверим, насколько внимательно класс слушал факты. Выбирайте один верный ответ!</p>
+      <p class="slide-lead">Проверим, кто самый внимательный! Выбирайте правильный ответ.</p>
 
       <div class="quiz-container">
         <div class="quiz-card">
@@ -1343,7 +1260,7 @@
           </div>
 
           <div class="quiz-options-grid" id="quizOptionsContainer">
-            <!-- 4 options -->
+            <!-- Dynamic 4 Options -->
           </div>
 
           <div class="quiz-progress-bar">
@@ -1352,60 +1269,52 @@
         </div>
 
         <div style="display:flex; justify-content:space-between; align-items:center;">
-          <div id="quizResultVerdict" style="font-weight:700; font-size:1.05rem; color:var(--text-secondary);">
+          <div id="quizResultVerdict" style="font-weight:800; font-size:1.05rem; color:var(--text-secondary);">
             Вопрос 1 из 6
           </div>
-          <button class="quick-tag-btn" onclick="restartQuiz()">Начать квиз сначала ↺</button>
+          <button class="quick-tag-btn" onclick="restartQuiz()">Сначала ↺</button>
         </div>
       </div>
     </section>
 
-    <!-- SLIDE 8: Финал и итоги урока (+ опция тактильной разминки) -->
+    <!-- SLIDE 8: Брайль вокруг нас (Крупный фото-коллаж) -->
     <section class="slide" id="slide-7">
-      <div class="slide-badge">Итоги урока • Чему мы научились</div>
-      <h1 class="slide-title">Главный вывод: Знания открывают мир каждому</h1>
-      <p class="slide-lead">Подвиг Луи Брайля доказывает: упорство, наука и сочувствие к другим способны победить любые препятствия.</p>
+      <div class="slide-badge">Шрифт Брайля в реальной жизни</div>
+      <h1 class="slide-title">Брайль вокруг нас: Где его можно найти сегодня?</h1>
+      <p class="slide-lead">Изобретение 15-летнего подростка окружает нас в каждом городе мира.</p>
 
-      <div class="grid-3">
-        <div class="feature-card highlight">
-          <div class="card-num">1</div>
-          <h3>Возраст не помеха</h3>
-          <p>Луи Брайль создал фундаментальное изобретение человечества в 15 лет — всего на 5 лет старше учеников 4 класса.</p>
-        </div>
-
-        <div class="feature-card highlight">
-          <div class="card-num">2</div>
-          <h3>Научный расчёт</h3>
-          <p>Гениальность шрифта — не в случайности, а в глубоком понимании возможностей человеческого осязания (матрица 2×3).</p>
-        </div>
-
-        <div class="feature-card highlight">
-          <div class="card-num">3</div>
-          <h3>Равные возможности</h3>
-          <p>Сегодня шрифт Брайля есть на лекарствах, в лифтах, на вокзалах и в умных тактильных дисплеях компьютеров.</p>
-        </div>
-      </div>
-
-      <!-- Опциональный блок разминки (по желанию учителя) -->
-      <div class="warmup-box">
-        <div style="display:flex; justify-content:space-between; align-items:center;">
-          <div style="font-weight:800; font-size:1.05rem; color:#1E3A8A;">
-            🖐️ Опция для урока: 2-минутный тактильный эксперимент в классе
+      <div class="impact-visual-grid">
+        <div class="visual-card" style="box-shadow:var(--shadow-md);">
+          <img src="images/braille_everyday_life.jpg" alt="Брайль в реальной жизни: кнопки лифта, лекарства, собака-поводырь" class="visual-card-img" style="height:310px;">
+          <div class="visual-card-body">
+            <div class="visual-card-title">Городская доступная среда</div>
+            <div class="visual-card-text">Точки Брайля на кнопках лифта, коробках с лекарствами и музейных табличках.</div>
           </div>
-          <button class="quick-tag-btn" onclick="toggleWarmupDetails(this)">Развернуть инструкцию</button>
         </div>
-        <div class="warmup-steps" id="warmupDetailsPanel" style="display:none;">
-          <div class="warmup-step-item">
-            <strong>1. Закрыть глаза</strong>
-            <p style="font-size:0.85rem; color:var(--text-secondary); margin-top:4px;">Все ученики закрывают глаза на 30 секунд и слушают окружающие звуки школы.</p>
+
+        <div class="impact-badges-column">
+          <div class="impact-badge-card">
+            <div class="impact-badge-icon">💊</div>
+            <div>
+              <h4>Упаковки лекарств</h4>
+              <p>Название и дозировка выдавлены точками Брайля по закону.</p>
+            </div>
           </div>
-          <div class="warmup-step-item">
-            <strong>2. Нащупать предмет</strong>
-            <p style="font-size:0.85rem; color:var(--text-secondary); margin-top:4px;">С закрытыми глазами достать из пенала ручку, ластик или линейку только пальцами.</p>
+
+          <div class="impact-badge-card">
+            <div class="impact-badge-icon">🛗</div>
+            <div>
+              <h4>Кнопки в лифтах и банкоматах</h4>
+              <p>Рядом с каждой цифрой этажа есть тактильные точки.</p>
+            </div>
           </div>
-          <div class="warmup-step-item">
-            <strong>3. Обсудить ощущение</strong>
-            <p style="font-size:0.85rem; color:var(--text-secondary); margin-top:4px;">Почувствовать, насколько чувствительны пальцы, когда зрение выключено.</p>
+
+          <div class="impact-badge-card">
+            <div class="impact-badge-icon">💻</div>
+            <div>
+              <h4>Компьютерные дисплеи Брайля</h4>
+              <p>Специальная строчка с выдвигающимися штырьками для чтения сайтов.</p>
+            </div>
           </div>
         </div>
       </div>
@@ -1415,21 +1324,14 @@
 
   <!-- Navigation Dock -->
   <footer class="dock">
-    <button class="dock-btn" onclick="navigateSlide(-1)" title="Предыдущий слайд (Стрелка влево)">‹</button>
-    
-    <div class="indicators-group" id="slideIndicators">
-      <!-- Generated via JS -->
-    </div>
-
+    <button class="dock-btn" onclick="navigateSlide(-1)" title="Назад (Стрелка влево)">‹</button>
+    <div class="indicators-group" id="slideIndicators"></div>
     <span class="dock-counter" id="slideCounterText">1 / 8</span>
-    
-    <button class="dock-btn" onclick="navigateSlide(1)" title="Следующий слайд (Стрелка вправо или Пробел)">›</button>
+    <button class="dock-btn" onclick="navigateSlide(1)" title="Вперёд (Стрелка вправо или Пробел)">›</button>
   </footer>
 
   <script>
-    /* ========================================================
-       1. WEB AUDIO API SOUND ENGINE (Friendly UI Sound Feedback)
-       ======================================================== */
+    /* Audio Tone Engine */
     let audioCtx = null;
     function playTone(freq = 440, duration = 0.1, type = 'sine', volume = 0.12) {
       try {
@@ -1459,9 +1361,7 @@
       setTimeout(() => playTone(210, 0.2, 'sawtooth', 0.1), 100);
     }
 
-    /* ========================================================
-       2. CONGRATULATIONS CONFETTI EFFECT
-       ======================================================== */
+    /* Confetti */
     function burstConfetti(originX, originY, amount = 40) {
       const colors = ['#1D4ED8', '#0284C7', '#059669', '#D97706', '#9333EA', '#DC2626'];
       const x = originX || window.innerWidth / 2;
@@ -1497,9 +1397,7 @@
       }
     }
 
-    /* ========================================================
-       3. SLIDE DECK NAVIGATION LOGIC
-       ======================================================== */
+    /* Deck Navigation */
     const slides = Array.from(document.querySelectorAll('.slide'));
     const indicatorsBox = document.getElementById('slideIndicators');
     const counterText = document.getElementById('slideCounterText');
@@ -1541,9 +1439,8 @@
       counterText.textContent = `${currentSlideIdx + 1} / ${slides.length}`;
     }
 
-    // Keyboard navigation (Presenter clicker & laptop keys)
     window.addEventListener('keydown', (e) => {
-      if (e.target.tagName === 'INPUT') return; // Don't intercept when typing in input
+      if (e.target.tagName === 'INPUT') return;
       if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
         e.preventDefault();
         navigateSlide(1);
@@ -1557,7 +1454,6 @@
       }
     });
 
-    // Touch swipe support for interactive screens & tablets
     let touchStartX = 0;
     window.addEventListener('touchstart', (e) => {
       touchStartX = e.touches[0].clientX;
@@ -1572,7 +1468,6 @@
       }
     }, { passive: true });
 
-    // Mode Toggle: Projector Mode (extra contrast, bold strokes)
     function toggleProjectorMode() {
       const body = document.body;
       body.classList.toggle('mode-projector');
@@ -1582,7 +1477,6 @@
       playTone(500, 0.08, 'triangle', 0.1);
     }
 
-    // Fullscreen Toggle
     function toggleFullscreen() {
       if (!document.fullscreenElement) {
         document.documentElement.requestFullscreen().catch(() => {});
@@ -1593,12 +1487,7 @@
       }
     }
 
-    /* ========================================================
-       4. OFFICIAL RUSSIAN BRAILLE DICTIONARY (Standard 6-dot matrix)
-       Dot positions: 1:top-left, 2:mid-left, 3:bot-left, 
-                      4:top-right, 5:mid-right, 6:bot-right
-       Array representation: [d1, d2, d3, d4, d5, d6]
-       ======================================================== */
+    /* Russian Braille Map */
     const BRAILLE_RU = {
       'А': [1, 0, 0, 0, 0, 0],
       'Б': [1, 1, 0, 0, 0, 0],
@@ -1636,9 +1525,7 @@
       ' ': [0, 0, 0, 0, 0, 0]
     };
 
-    /* ========================================================
-       5. SLIDE 5: BUILD LETTER PRACTICUM LOGIC
-       ======================================================== */
+    /* Practicum: Build Letter */
     const buildChallenges = [
       { letter: 'А', desc: 'Точка 1 (верхняя левая)' },
       { letter: 'Б', desc: 'Точки 1 и 2 (левый столбик)' },
@@ -1646,13 +1533,10 @@
       { letter: 'К', desc: 'Точки 1 и 3 (верх и низ слева)' },
       { letter: 'О', desc: 'Точки 1, 3 и 5' }
     ];
-
     let currentBuildRound = 0;
     let userDotState = [0, 0, 0, 0, 0, 0];
 
     function initBuilderSlide() {
-      // Build 6 clickable buttons in column order (1,2,3 left; 4,5,6 right)
-      // Display grid is 2 cols: row 1 (dot 1, dot 4), row 2 (dot 2, dot 5), row 3 (dot 3, dot 6)
       const container = document.getElementById('userClickCell');
       container.innerHTML = '';
       
@@ -1698,7 +1582,6 @@
       document.getElementById('buildTargetDesc').textContent = ch.desc;
       document.getElementById('buildProgressCounter').textContent = `Буква ${currentBuildRound + 1} из ${buildChallenges.length}`;
 
-      // Render small visual guide
       const visBox = document.getElementById('buildTargetVisual');
       visBox.innerHTML = '';
       const pat = BRAILLE_RU[ch.letter] || [0,0,0,0,0,0];
@@ -1735,18 +1618,14 @@
         }, 1200);
       } else {
         soundWrong();
-        fb.textContent = '❌ Не совсем точно. Сверься с образцом слева и попробуй ещё раз!';
+        fb.textContent = '❌ Не совсем точно. Сверься с образцом слева!';
         fb.style.color = 'var(--danger)';
       }
     }
 
-    /* ========================================================
-       6. SLIDE 6: LIVE REAL-TIME TRANSLATOR
-       ======================================================== */
+    /* Live Translator */
     const liveInput = document.getElementById('liveTranslatorInput');
-    liveInput.addEventListener('input', () => {
-      renderLiveTranslation();
-    });
+    liveInput.addEventListener('input', () => { renderLiveTranslation(); });
 
     function setQuickWord(word) {
       liveInput.value = word;
@@ -1760,16 +1639,15 @@
       tape.innerHTML = '';
 
       if (!rawText.trim()) {
-        tape.innerHTML = '<span style="color:var(--text-muted); font-size:1.1rem; font-weight:600;">Напечатай любое слово выше...</span>';
+        tape.innerHTML = '<span style="color:var(--text-muted); font-size:1.1rem; font-weight:600;">Напечатай слово выше...</span>';
         document.getElementById('translatorStatus').textContent = 'Ожидание ввода слова...';
         return;
       }
 
-      const gridOrder = [0, 3, 1, 4, 2, 5]; // Row 1 (1,4), Row 2 (2,5), Row 3 (3,6)
+      const gridOrder = [0, 3, 1, 4, 2, 5];
 
       Array.from(rawText).forEach(char => {
         const pattern = BRAILLE_RU[char] || [0,0,0,0,0,0];
-        
         const cell = document.createElement('div');
         cell.className = 'cipher-cell';
 
@@ -1794,55 +1672,53 @@
       document.getElementById('translatorStatus').textContent = `Слово «${rawText}» — ${rawText.length} символов Брайля`;
     }
 
-    /* ========================================================
-       7. SLIDE 7: INTERACTIVE QUIZ ARENA
-       ======================================================== */
+    /* Quiz */
     const quizQuestions = [
       {
         question: "В каком возрасте Луи Брайль создал свою систему чтения?",
         options: ["В 10 лет", "В 15 лет", "В 25 лет", "В 40 лет"],
         correctIndex: 1,
-        explanation: "Луи усовершенствовал военный шифр Барбье и представил готовую систему в 15 лет!"
+        explanation: "Луи усовершенствовал код Барбье и представил систему ровно в 15 лет!"
       },
       {
-        question: "Сколько точек входит в одну базовую ячейку Брайля?",
+        question: "Сколько точек входит в одну ячейку Брайля?",
         options: ["4 точки", "6 точек", "8 точек", "12 точек"],
         correctIndex: 1,
-        explanation: "Ровно 6 точек (2 столбика по 3 точки). Именно столько распознает палец за 1 касание."
+        explanation: "Ровно 6 точек (2 столбика по 3). Именно столько палец охватывает за 1 касание."
       },
       {
-        question: "Какой шифр вдохновил Луи на создание шрифта?",
-        options: ["Азбука Морзе", "«Ночная азбука» капитана Барбье", "Шифр Юлия Цезаря", "Морской семафор"],
+        question: "Какой военный код вдохновил Луи на изобретение?",
+        options: ["Азбука Морзе", "«Ночная азбука» капитана Барбье", "Шифр Цезаря", "Флажковый семафор"],
         correctIndex: 1,
-        explanation: "Шарль Барбье придумал 12-точечный военный код для передачи донесений в темноте."
+        explanation: "Шарль Барбье придумал 12-точечный код для чтения донесений в ночной темноте."
       },
       {
         question: "В каком году родился Луи Брайль?",
         options: ["1709", "1809", "1909", "1852"],
         correctIndex: 1,
-        explanation: "Луи родился 4 января 1809 года во Франции, в городе Кувре."
+        explanation: "Луи родился 4 января 1809 года во Франции."
       },
       {
         question: "Как правильно предложить помощь незрячему человеку на улице?",
         options: [
-          "Молча взять за локоть и повести через дорогу",
-          "Подойти, представиться и вежливо спросить: «Вам помочь?»",
-          "Погладить собаку-поводыря и помахать рукой",
-          "Громко кричать, чтобы привлечь внимание прохожих"
+          "Молча взять за руку и потянуть",
+          "Подойти, назвать имя и спросить: «Вам помочь?»",
+          "Погладить собаку-поводыря",
+          "Громко кричать на всю улицу"
         ],
         correctIndex: 1,
-        explanation: "Всегда сначала назовите себя голосом и спросите согласие, прежде чем помогать."
+        explanation: "Всегда сначала представьтесь голосом и вежливо спросите согласие."
       },
       {
         question: "Где сегодня в обычной жизни можно встретить шрифт Брайля?",
         options: [
-          "Только в старинных библиотеках Парижа",
-          "На упаковках лекарств, в лифтах и на вокзалах",
-          "Нигде, его уже заменили голосовые помощники",
-          "Только в специальных военных штабах"
+          "Только в архивах Парижа",
+          "На упаковках лекарств, в лифтах и банкоматах",
+          "Нигде, его уже не используют",
+          "Только в секретных бункерах"
         ],
         correctIndex: 1,
-        explanation: "Шрифт Брайля стандартизирован и обязателен на медикаментах, кнопках лифтов и в музеях!"
+        explanation: "Шрифт Брайля стандартизирован и обязателен на медикаментах и кнопках лифтов!"
       }
     ];
 
@@ -1867,7 +1743,6 @@
         optContainer.appendChild(btn);
       });
 
-      // Progress bar fill
       const progressPct = ((idx) / quizQuestions.length) * 100;
       document.getElementById('quizProgressBarFill').style.width = `${progressPct}%`;
       document.getElementById('quizResultVerdict').textContent = `Вопрос ${idx + 1} из ${quizQuestions.length}`;
@@ -1906,14 +1781,13 @@
     function finishQuiz() {
       document.getElementById('quizProgressBarFill').style.width = '100%';
       const percent = Math.round((quizScoreCount / quizQuestions.length) * 100);
-      const verdict = document.getElementById('quizResultVerdict');
       
       document.getElementById('quizQuestionBody').textContent = 'Квиз завершён! Результаты класса:';
       document.getElementById('quizOptionsContainer').innerHTML = `
         <div style="grid-column: span 2; background:var(--primary-light); border:1.5px solid var(--primary); padding:24px; border-radius:14px; text-align:center;">
           <div style="font-size:2.4rem; font-weight:900; color:var(--primary); margin-bottom:8px;">${quizScoreCount} из ${quizQuestions.length} (${percent}%)</div>
           <p style="font-size:1.1rem; font-weight:700; color:var(--text-main);">
-            ${percent === 100 ? '🌟 Абсолютный триумф! 4 класс блестяще освоил тему!' : (percent >= 70 ? '👍 Отличный результат! Вы настоящие знатоки науки!' : '💪 Хорошая попытка! Повторите факты и попробуйте снова!')}
+            ${percent === 100 ? '🌟 Абсолютный триумф! 4 класс блестяще знает тему!' : (percent >= 70 ? '👍 Отличный результат! Вы настоящие исследователи!' : '💪 Хорошая попытка! Повторите факты и попробуйте снова!')}
           </p>
         </div>
       `;
@@ -1930,24 +1804,6 @@
       playTone(440, 0.08, 'triangle', 0.1);
     }
 
-    /* ========================================================
-       8. SLIDE 8: OPTIONAL WARMUP PANEL TOGGLE
-       ======================================================== */
-    function toggleWarmupDetails(btn) {
-      const panel = document.getElementById('warmupDetailsPanel');
-      if (panel.style.display === 'none' || !panel.style.display) {
-        panel.style.display = 'grid';
-        btn.textContent = 'Свернуть инструкцию';
-      } else {
-        panel.style.display = 'none';
-        btn.textContent = 'Развернуть инструкцию';
-      }
-      playTone(450, 0.06, 'sine', 0.08);
-    }
-
-    /* ========================================================
-       INITIALIZATION
-       ======================================================== */
     document.addEventListener('DOMContentLoaded', () => {
       setupSlideDeck();
       initBuilderSlide();
